@@ -1,10 +1,13 @@
-PandasµÄÊý¾Ý½á¹¹
-PandasÓÐÁ½¸ö×îÖ÷ÒªÒ²ÊÇ×îÖØÒªµÄÊý¾Ý½á¹¹£º Series ºÍ DataFrame
+Pandasï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹
+Pandasï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÒ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½ Series ï¿½ï¿½ DataFrame
 1.Series
-	SeriesÊÇÒ»ÖÖÀàËÆÓÚÒ»Î¬Êý×éµÄ ¶ÔÏó£¬ÓÉÒ»×éÊý¾Ý£¨¸÷ÖÖNumPyÊý¾ÝÀàÐÍ£©ÒÔ¼°Ò»×éÓëÖ®¶ÔÓ¦µÄË÷Òý£¨Êý¾Ý±êÇ©£©×é³É¡£
+	Seriesï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Î¬ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½NumPyï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½Ô¼ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½Ç©ï¿½ï¿½ï¿½ï¿½É¡ï¿½
 
-ÀàËÆÒ»Î¬Êý×éµÄ¶ÔÏó
-ÓÉÊý¾ÝºÍË÷Òý×é³É
-Ë÷Òý(index)ÔÚ×ó£¬Êý¾Ý(values)ÔÚÓÒ
-Ë÷ÒýÊÇ×Ô¶¯´´½¨µÄ
+ï¿½ï¿½ï¿½ï¿½Ò»Î¬ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½Ýºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½(index)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(values)ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
+
+
+ninini
