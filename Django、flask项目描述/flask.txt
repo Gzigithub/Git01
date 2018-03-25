@@ -1,0 +1,69 @@
+﻿Flask装饰器路由的实现：
+Flask有两大核心：Werkzeug和Jinja2。Werkzeug实现路由、调试和Web服务器网关接口。Jinja2实现了模板。
+Werkzeug是一个遵循WSGI协议的python函数库。其内部实现了很多Web框架底层的东西，比如request和response对象；与WSGI规范的兼容；支持Unicode；支持基本的会话管理和签名Cookie；集成URL请求路由等。
+Werkzeug库的routing模块负责实现URL解析。不同的URL对应不同的视图函数，routing模块会对请求信息的URL进行解析，匹配到URL对应的视图函数，以此生成一个响应信息。
+routing模块内部有Rule类（用来构造不同的URL模式的对象）、Map类（存储所有的URL规则）、MapAdapter类（负责具体URL匹配的工作）；
+
+2.宏的作用就是在模板中重复利用代码，避免代码冗余。
+
+3.使用Werkzeug实现密码散列
+使用Werkzeug.security 模块中的generate_password_hash(注册用户),check_password_hash(验证用户) 两个函数能够很方便地实现密码散列值的计算。
+generate_password_hash(password, method=pbkdf2:sha1, salt_length=8)：这个函数将 
+原始密码作为输入，以字符串形式输出密码的散列值， 输出的值可保存在用户数据库中。 
+method 和 salt_length 的默认值就能满足大多数需求。
+check_password_hash(hash, password)：这个函数的参数是从数据库中取回的密码散列 
+值和用户输入的密码。返回值为 True 表明密码正确。
+
+
+4.@property 用法理解
+@property装饰器用于将一个方法变成属性。 
+1.上例中，先加上@property将password方法变成属性
+2.此时，@property本身又创建了另一个装饰器@password.setter，负责把一个setter方法变成属性赋值。可以通过User.password =进行赋值，同时，调用@password.setter 
+def password(self, password):函数，对self.password_hash赋值。
+3.当调用User.password时，返回password is not a readable attribute/ password 不是一个可读属性。
+
+
+
+
+
+
+技术描述：Flask+MySQL+Redis+Gunicorn+Nginx  
+项目描述及模块：
+***是一个关于短期出租、寻租房屋平台的项目。主要目标是为用户提供租房、寻租的一个平台,项目基于Flask框架，项目以前后端分离的形式实现具体功能业务，前后端交互数据形式主要使用json。后台接口负责处理业务逻辑，并提供响应数据，前端页面负责展示数据和效果。项目接口设计符合RestfulAPI风格。
+Flask扩展：
+flask-SQLAlchemy
+flask_script
+flask_migrate
+flask_wtf
+第三方扩展：阿里云、云通信、captcha。
+项目模块：用户管理、房屋管理、订单管理。
+
+登录注册：用户名要求使用手机号进行注册，使用captcha实现图片验证码，图片验证码的生成使用
+UUID（全局唯一标识符，时间、硬件信息（Mac地址、IP地址等）、随机数、时间序列等，
+根据算法生成十六进制的随机数。UUID由前端生成，后端存储和验证）来区别其他图片验证码，图片验证码只验证一次，另外为防止恶意测试，
+在发送短信验证前，要求用户必须在图片验证码符合要求的情况下，才发送短信验证码。
+短信验证通过第三方容联云通信实现。图片验证码和短信验证码数据使用redis缓存。
+项目静态图片数据和个人头像设置，使用了第三方云存储服务器七牛云（1.不用本地维护，解决去重问题；2.维护图片的存储，文件名使用随机数使用MD5算法）。
+	表单数据提交为避免CSRF，使用了flask_wtf提供的CSRFProtect模块，
+前端通过ajax发送的头信息中携带token信息实现跨站请求保护。
+	用户密码信息的存储使用了flask的核心之一Werkzeug中的sercurity的generate_password_hash(密码加密)
+和check_password_hash(验证密码)来实现密码的存储和验证。
+
+个人信息展示：提供修改个人用户昵称和头像信息(七牛云存储)的入口，如果用户未设置，
+默认用户名为手机号。提供发布房源入口。查询个人订单信息的入口，以及用户退出功能。
+
+
+
+Flask哪里用到了session：
+1)请求上下文对象，flask内置；作用：用来缓存用户信息；session['name']=user.name 
+2)flask_session扩展包：作用
+
+
+
+
+
+
+
+
+
+
