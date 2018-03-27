@@ -1,0 +1,471 @@
+
+
+class RegisterView(View):
+	"""注册类视图"""
+	def get(self, request):
+		"""对应get请求方式的逻辑, 返回注册的页面"""
+        return render(request, "register.html")
+		
+	def post(self, request):
+		"""对应post请求方式的逻辑"""
+		# 获取参数
+		# 用户名、密码、确认密码、邮箱、是否同意协议
+		user_name = request.Post.get("user_name")
+		password = request.POST.get("pwd")
+        password2 = request.POST.get("cpwd")
+        email = request.POST.get("email")
+        allow = request.POST.get("allow")
+		
+		# 校验参数
+        # 逻辑判断  0 0.0 "" [] () {} None False 假
+        # all处理所有的元素，只有所有元素都为真，all函数才会返回真，否则返回假
+        if not all([user_name, password, password2, email, allow]):
+            # 参数不完整
+            url = reverse("users:register")
+            return redirect(url)
+			
+		# 判断二次密码是否一致
+		if password != password2:
+			return render(request, "register.html", {"errmsg": "两次密码不一致"})
+			
+		# 判断邮箱格式是否正确
+		if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}', email):
+            # 不匹配
+            return render(request, "register.html", {"errmsg": "邮箱格式不正确"})
+			
+		# 判断是否勾选了协议
+        if allow != "on":
+            return render(request, "register.html", {"errmsg": "请同意用户协议"})
+			
+		# 业务处理
+		# 保存数据到数据库中
+		# create_user方法是django用户认证系统提供的
+		# 会帮助我们加密密码并保存到数据库
+		try:
+			user = User.object.create_user(user_name, email, password)
+		except IntegrityError as e:
+            # 表示用户已注册
+            return render(request, "register.html", {"errmsg": "用户名已存在"})
+
+		# 更改用户的激活状态，将默认的已激活改为未激活
+		user.is_active = False
+		user.save()
+		
+		user.is_active = False
+		user.save()
+		
+		# 生成用户激活的身份token（令牌）
+		token = user.generate_active_token()
+		
+		# 拼接激活的连接
+        active_url = "http://127.0.0.1:8000/users/active/" + token
+
+        # 发送激活的邮件
+        # # send_mail(邮件标题， 邮件内容，发件人， 收件人， html_message=html格式的邮件内容)
+        # html_message = """
+        # <h1>天天生鲜用户激活</h1>
+        # <h2>尊敬的用户%s, 感谢您注册天天生鲜，请在24小时内点击如下链接激活用户</h2>
+        # <a href=%s>%s</a>
+        # """ % (user_name, active_url, active_url)
+        # send_mail("天天生鲜用户激活", "", settings.EMAIL_FROM, [email], html_message=html_message)
+
+        # 异步发送邮件  非阻塞
+        send_active_email.delay(user_name, active_url, email)
+
+        # 返回值
+        return redirect(reverse("users:login"))
+		
+#
+# # 激活邮件
+# user_id=4
+#
+# 请点击这个链接激活用户 http://127.0.0.1:8000/users/active/hfoiwefhoweifhowheofihwofhewoifhoewfhw
+#
+# 查询字符串  querystring
+#
+#
+# 浏览器  GET 访问  http://http://127.0.0.1:8000/users/active/4 -> 改变用户的激活状态
+
+# 加密计算过程是不能反推的
+# 采用签名序列化
+
+class UserActiveView(View):
+    """用户激活视图"""
+    def get(self, request, user_token):
+        """
+        用户激活
+        :param request:
+        :param user_token:  用户激活令牌
+        :return:
+        """
+        # 创建装换工具对象（序列化器）
+        s = Serializer(settings.SECRET_KEY, constants.USER_ACTIVE_EXPIRES)
+        try:
+            data = s.loads(user_token)
+        except SignatureExpired:
+            # 表示token过期
+            return HttpResponse("链接已过期")
+
+        user_id = data.get("user_id")
+
+        # 更新用户的激活状态
+        # User.objects.filter(id=user_id).update(is_active=True)
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            # 如果不存在，会抛出这个异常
+            return HttpResponse("用户不能存在")
+
+        user.is_active = True
+        user.save()
+
+        return redirect(reverse("users:login"))
+		
+		
+class LoginView(View):
+    """登录"""
+    def get(self, request):
+        """提供登录页面"""
+        return render(request, "login.html")
+
+    # /users/login?next=/users/address  # request.GET  # 从查询字符串中获取数据
+    # /users/login
+    def post(self, request):
+        """登录处理"""
+        # 获取参数
+        user_name = request.POST.get("username")  # 从请求体获取数据
+        password = request.POST.get("pwd")
+
+        # 校验参数
+        if not all([user_name, password]):
+            return render(request, "login.html", {"errmsg": "用户名或密码不能为空"})
+
+        # 业务处理
+        # 原始思路：
+        # 判断用户名或密码是否正确
+        # 根据用户名查询数据库，获取用户的密码信息
+        # user = User.objects.get(username=user_name)
+        # 对用户输入的登录密码进行加密处理，然后与数据库查询的密码进行对比，如果相同，表示登录成功，否则失败
+        # user_password = sha256(password)
+        # if user_password == user.password
+
+        # 可以直接使用django自带的认证系统
+        user = authenticate(username=user_name, password=password)
+
+        if user is None:
+            # 认证失败
+            return render(request, "login.html", {"errmsg": "用户名或密码错误"})
+
+        # 表示用户名和密码正确
+        # 判断激活状态
+        if user.is_active is False:
+            # 表示用户未激活
+            return render(request, "login.html", {"errmsg": "用户未激活"})
+
+        # 登录成功
+        # 记录用户的登录状态到session中
+        # 使用django的认证系统记录用户登录
+        login(request, user)
+
+        # 判断用户是否勾选记录用户名（即记录登录状态）
+        remember = request.POST.get("remember")
+        if remember == "on":
+            # 表示勾选了记录用户名
+            # 设置session有效期, None表示使用django的默认session有效期
+            request.session.set_expiry(None)
+        else:
+            # 表示未勾选，浏览器关闭即失效
+            request.session.set_expiry(0)
+
+        # 合并用户登录与未登录的购物车数据，即cookie与redis的数据
+        # 取出cookie里的购物车数据
+        cart_json_str = request.COOKIES.get("cart_info")
+        if cart_json_str:
+            cart_cookie_dict = json.loads(cart_json_str)
+        else:
+            cart_cookie_dict = {}
+            # {"1":20, "2":12}
+
+        # 取出redis中的购物车数据
+        redis_conn = get_redis_connection("default")
+
+        cart_redis_dict = redis_conn.hgetall("cart_%s" % user.id)
+        if not cart_redis_dict:
+            cart_redis_dict = {}
+            # {b"1":b"12", ...}
+
+        # 合并
+        for sku_id, sku_count in cart_cookie_dict.items():
+            sku_id = sku_id.encode()
+
+            # 如果redis的购物车中，有相同商品，数量累加
+            if sku_id in cart_redis_dict:
+
+                sku_count += int(cart_redis_dict[sku_id])
+
+                cart_redis_dict[sku_id] = sku_count
+
+            # 如果redis中没有，则设置
+            else:
+                cart_redis_dict[sku_id] = sku_count
+
+        # 将和并的购物车数据保存到redis中
+        if cart_redis_dict:
+            # hmset要求设置的字典不能为空，只有合并之后的字典有数据，才设置redis
+            redis_conn.hmset("cart_%s" % user.id, cart_redis_dict)
+
+        # 从查询字符串中尝试获取next的参数
+        next = request.GET.get("next")
+
+        if next is None:
+            next = reverse("goods:index")
+
+        # 创建视图的返回响应对象
+        resp = redirect(next)
+
+        # 删除cookie
+        resp.delete_cookie("cart_info")
+
+        return resp
+
+
+class LogoutView(View):
+    """退出视图"""
+    def get(self, request):
+        """退出"""
+        # 清除用户的登录数据 session
+        # 使用django自带认证系统的退出
+        logout(request)
+
+        # 退出后，引导到登录页面
+        return redirect(reverse("users:login"))
+
+# class LoginRequiredMixin(object):
+#     @classmethod
+#     def as_view(cls, *args, **kwargs):
+#         # super寻找调用类AddressView的下一个父类的as_view()
+#         view = super(LoginRequiredMixin, cls).as_view(*args, **kwargs)
+#
+#         view = login_required(view)
+#
+#         return view
+
+
+class AddressView(LoginRequiredMixin, View):
+    """用户地址"""
+    def get(self, request):
+        """提供地址页面数据"""
+        # 查询数据库，获取用户的地址信息
+        # 当前请求的用户
+        user = request.user
+
+        # 方式一：
+        # Address.objects.filter(user=user).order_by("-update_time")[0]
+        # 方式二：
+        # user.address_set.order_by("-update_time")[0]
+        try:
+            address = user.address_set.latest("update_time")
+        except Address.DoesNotExist:
+            # 表示数据库中没有这个用户地址数据
+            address = None
+
+        return render(request, "user_center_site.html", {"address": address})
+
+    def post(self, request):
+        """保存用户地址数据"""
+        user = request.user
+
+        try:
+            address = user.address_set.latest("update_time")
+        except Address.DoesNotExist:
+            # 表示数据库中没有这个用户地址数据
+            address = None
+
+        receiver_name = request.POST.get("receiver_name")
+        new_detail_address = request.POST.get("address")
+        zip_code = request.POST.get("zip_code")
+        mobile = request.POST.get("mobile")
+
+        if not all([receiver_name, new_detail_address, zip_code, mobile]):
+            return render(request, "user_center_site.html", {"address": address, "errmsg": "数据不完整"})
+
+        # 保存数据到数据库中
+        # new_address = Address(
+        #     user=user,
+        #     receiver_name=receiver_name,
+        #     receiver_mobile=mobile,
+        #     detail_addr=new_detail_address,
+        #     zip_code=zip_code
+        # )
+        # new_address.save()
+
+        # new_address = Address()
+        # new_address.user =user
+
+        Address.objects.create(
+            user=user,
+            receiver_name=receiver_name,
+            receiver_mobile=mobile,
+            detail_addr=new_detail_address,
+            zip_code=zip_code
+        )
+
+        return redirect(reverse("users:address"))
+
+
+class UserInfoView(LoginRequiredMixin, View):
+    """用户基本信息页面"""
+    def get(self, request):
+        """提供页面"""
+        user = request.user
+
+        # 查询基本信息（地址联系信息）
+        try:
+            address = user.address_set.latest("update_time")
+        except Address.DoesNotExist:
+            # 表示数据库中没有这个用户地址数据
+            address = None
+
+        # 查询浏览历史记录, redis
+        # 获取django_redis提供的redis连接对象
+        redis_conn = get_redis_connection("default")
+
+        # 浏览历史记录在redis中以列表保存
+        redis_key = "history_%s" % user.id
+        sku_ids_list = redis_conn.lrange(redis_key, 0, 4)
+        # sku_ids_list [7, 4, 8, 2 , 3]
+
+        # 根据sku_id查询商品信息
+        # select * from df_goods_sku where id in (1, 2,3,4)
+        # sku_obj_list = GoodsSKU.objects.filter(id__in=sku_ids_list)  # [7, 4, 8, 2 , 3]
+
+        # 为了保证从数据库查询出的顺序与用户的访问顺序一致
+        sku_obj_list = []
+        for sku_id in sku_ids_list:
+            sku = GoodsSKU.objects.get(id=sku_id)
+            sku_obj_list.append(sku)
+
+        context = {
+            "address": address,
+            "skus": sku_obj_list
+        }
+        # 返回
+        return render(request, "user_center_info.html", context)
+	
+		
+
+
+
+
+		
+8.7搜索页面
+草莓  GoodsSKU   df_sku
+select * from df_sku where name like ‘%草莓%’ or title like ‘%草莓%’ 
+
+草莓
+
+草莓 500g    深圳盒装草莓物美价廉    小草莓
+
+Dong  678
+全文检索
+
+搜索引擎  
+1.建立数据的索引表    草莓 sku= 1 2 3   基围虾 sku =100
+2.进行中文分词操作 *
+whoosh  
+
+搜索框架
+haystack  搭建了用户和搜索引擎之间的沟通问题
+
+
+
+配置：
+1)安装python包。
+pip install django-haystack
+pip install whoosh
+2)在settings.py文件中注册应用haystack并做如下配置。
+
+
+3）在goods应用目录下新建一个search_indexes.py文件，在其中定义一个商品索引类e。
+
+4）在templates下面新建目录search/indexes/goods。
+
+在此目录下面新建一个文件goodssku_text.txt并编辑内容如下：
+
+5）使用命令生成索引文件。
+	python manage.py rebuild_index
+
+全文检索的使用：
+1）配置url。
+
+2）表单搜索时设置表单内容如下。
+
+点击标题进行提交时，会通过haystack搜索数据。
+全文检索结果：
+搜索出结果后，haystack会把搜索出的结果传递给templates/search目录下的search.html，传递的上下文包括：
+?query：搜索关键字
+?page：当前页的page对象
+?paginator：分页paginator对象
+通过HAYSTACK_SEARCH_RESULTS_PER_PAGE 可以控制每页显示数量
+
+
+改变分词方式：
+1.安装jieba分词模块。
+pip install jieba
+2.找到虚拟环境py_django下的haystack目录。
+/home/python/.virtualenvs/bj10_py3/lib/python3.5/site-packages/haystack/backends/
+3.在上面的目录中创建ChineseAnalyzer.py文件。
+import jieba
+from whoosh.analysis import Tokenizer, Token
+
+class ChineseTokenizer(Tokenizer):
+    def __call__(self, value, positions=False, chars=False,
+                 keeporiginal=False, removestops=True,
+                 start_pos=0, start_char=0, mode='', **kwargs):
+        t = Token(positions, chars, removestops=removestops, mode=mode, **kwargs)
+        seglist = jieba.cut(value, cut_all=True)
+        for w in seglist:
+            t.original = t.text = w
+            t.boost = 1.0
+            if positions:
+                t.pos = start_pos + value.find(w)
+            if chars:
+                t.startchar = start_char + value.find(w)
+                t.endchar = start_char + value.find(w) + len(w)
+            yield t
+
+def ChineseAnalyzer():
+    return ChineseTokenizer()
+4.复制whoosh_backend.py文件，改为如下名称：
+	whoosh_cn_backend.py
+5.打开复制出来的新文件，引入中文分析类，内部采用jieba分词。
+from .ChineseAnalyzer import ChineseAnalyzer
+6.更改词语分析类。
+查找
+analyzer=StemmingAnalyzer()
+改为
+analyzer=ChineseAnalyzer()
+7.
+8.
+9.重新创建索引数据
+python manage.py rebuild_index	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

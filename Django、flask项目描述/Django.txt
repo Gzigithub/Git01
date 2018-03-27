@@ -1,144 +1,139 @@
-ï»¿1.Djangoé¡¹ç›®ä¸­æ³¨å†Œæ—¶ç»™ç”¨æˆ·å‘é€æ¿€æ´»é‚®ä»¶ï¼Œä½¿ç”¨itsdangerousæ¨¡å—åŠ å¯†ï¼Œä»¥jsonæ–¹å¼æ¥ç¼–è¯‘ï¼ŒåŠ å¯†è®¡ç®—æ˜¯ä¸èƒ½åæŽ¨çš„ï¼Œ
-é‡‡ç”¨ç­¾ååºåˆ—åŒ–ã€‚å‘é€åˆ°é“¾æŽ¥é‡ŒåŒ…å«ç”¨æˆ·idï¼Œæœ‰æ•ˆæœŸï¼Œåˆ›å»ºæ—¶é—´ï¼Œç”Ÿæˆçš„æ˜¯bytesç±»åž‹ï¼ˆäºŒè¿›åˆ¶ï¼‰
+1.DjangoÏîÄ¿ÖÐ×¢²áÊ±¸øÓÃ»§·¢ËÍ¼¤»îÓÊ¼þ£¬Ê¹ÓÃitsdangerousÄ£¿é¼ÓÃÜ£¬ÒÔjson·½Ê½À´±àÒë£¬¼ÓÃÜ¼ÆËãÊÇ²»ÄÜ·´ÍÆµÄ£¬
+²ÉÓÃÇ©ÃûÐòÁÐ»¯¡£·¢ËÍµ½Á´½ÓÀï°üº¬ÓÃ»§id£¬ÓÐÐ§ÆÚ£¬´´½¨Ê±¼ä£¬Éú³ÉµÄÊÇbytesÀàÐÍ£¨¶þ½øÖÆ£©
 
-å‘é€é‚®ä»¶ä½¿ç”¨celeryå¼‚æ­¥å‘é€
-celeryçš„ç‰¹ç‚¹æ˜¯ï¼š
-ç®€å•ï¼Œæ˜“äºŽä½¿ç”¨å’Œç»´æŠ¤ï¼Œæœ‰ä¸°å¯Œçš„æ–‡æ¡£ã€‚
-é«˜æ•ˆï¼Œå•ä¸ªceleryè¿›ç¨‹æ¯åˆ†é’Ÿå¯ä»¥å¤„ç†æ•°ç™¾ä¸‡ä¸ªä»»åŠ¡ã€‚
-çµæ´»ï¼Œceleryä¸­å‡ ä¹Žæ¯ä¸ªéƒ¨åˆ†éƒ½å¯ä»¥è‡ªå®šä¹‰æ‰©å±•ã€‚
-Celeryéœ€è¦ä¸€ç§è§£å†³æ¶ˆæ¯çš„å‘é€å’ŒæŽ¥å—çš„æ–¹å¼ï¼Œæˆ‘ä»¬æŠŠè¿™ç§ç”¨æ¥å­˜å‚¨æ¶ˆæ¯çš„çš„ä¸­é—´è£…ç½®å«åšmessage broker, ä¹Ÿå¯å«åšæ¶ˆæ¯ä¸­é—´äººï¼ˆRedisï¼‰ã€‚
-
-
-2.æ¨¡åž‹Model
-æŸ¥è¯¢
-æ¯ä¸ªæ¨¡åž‹ç±»é»˜è®¤éƒ½æœ‰ä¸€ä¸ªå« objects çš„ç±»å±žæ€§ï¼Œå®ƒç”±djangoè‡ªåŠ¨ç”Ÿæˆï¼Œç±»åž‹ä¸ºï¼š django.db.models.manager.Managerï¼Œå¯ä»¥æŠŠå®ƒå« æ¨¡åž‹ç®¡ç†å™¨;
-
-objectsæ¨¡åž‹ç®¡ç†å™¨ä¸­æä¾›äº†ä¸€äº›æŸ¥è¯¢æ•°æ®çš„æ–¹æ³•ï¼š
-
-objectsç®¡ç†å™¨ä¸­çš„æ–¹æ³•	 	è¿”å›žç±»åž‹	ä½œç”¨
-æ¨¡åž‹ç±».objects.get()		æ¨¡åž‹å¯¹è±¡	è¿”å›žä¸€ä¸ªå¯¹è±¡ï¼Œä¸”åªèƒ½æœ‰ä¸€ä¸ª: å¦‚æžœæŸ¥åˆ°å¤šæ¡æ•°æ®ï¼Œåˆ™æŠ¥ï¼šMultipleObjectsReturned å¦‚æžœæŸ¥è¯¢ä¸åˆ°æ•°æ®ï¼Œåˆ™æŠ¥ï¼šDoesNotExist											
-æ¨¡åž‹ç±».objects.filter()		QuerySet	è¿”å›žæ»¡è¶³æ¡ä»¶çš„å¯¹è±¡
-æ¨¡åž‹ç±».objects.all()		QuerySet	è¿”å›žæ‰€æœ‰çš„å¯¹è±¡
-æ¨¡åž‹ç±».objects.exclude()	QuerySet	è¿”å›žä¸æ»¡æ¡ä»¶çš„å¯¹è±¡
-æ¨¡åž‹ç±».objects.order_by()	QuerySet	å¯¹æŸ¥è¯¢ç»“æžœé›†è¿›è¡ŒæŽ’åº
-æ¨¡åž‹ç±».objects.aggregate()	å­—å…¸ï¼Œä¾‹å¦‚ï¼š{'salary__avg': 9500.0}     è¿›è¡Œèšåˆæ“ä½œSum, Count, Max, Min, Avg
-æ¨¡åž‹ç±».objects.count()		æ•°å­—		è¿”å›žæŸ¥è¯¢é›†ä¸­å¯¹è±¡çš„æ•°ç›®
+·¢ËÍÓÊ¼þÊ¹ÓÃceleryÒì²½·¢ËÍ
+celeryµÄÌØµãÊÇ£º
+¼òµ¥£¬Ò×ÓÚÊ¹ÓÃºÍÎ¬»¤£¬ÓÐ·á¸»µÄÎÄµµ¡£
+¸ßÐ§£¬µ¥¸öcelery½ø³ÌÃ¿·ÖÖÓ¿ÉÒÔ´¦ÀíÊý°ÙÍò¸öÈÎÎñ¡£
+Áé»î£¬celeryÖÐ¼¸ºõÃ¿¸ö²¿·Ö¶¼¿ÉÒÔ×Ô¶¨ÒåÀ©Õ¹¡£
+CeleryÐèÒªÒ»ÖÖ½â¾öÏûÏ¢µÄ·¢ËÍºÍ½ÓÊÜµÄ·½Ê½£¬ÎÒÃÇ°ÑÕâÖÖÓÃÀ´´æ´¢ÏûÏ¢µÄµÄÖÐ¼ä×°ÖÃ½Ð×ömessage broker, Ò²¿É½Ð×öÏûÏ¢ÖÐ¼äÈË£¨Redis£©¡£
 
 
-3.Djangoè‡ªå¸¦è®¤è¯ç³»ç»Ÿï¼ˆauthenticate()å‡½æ•°ï¼‰
+2.Ä£ÐÍModel
+²éÑ¯
+Ã¿¸öÄ£ÐÍÀàÄ¬ÈÏ¶¼ÓÐÒ»¸ö½Ð objects µÄÀàÊôÐÔ£¬ËüÓÉdjango×Ô¶¯Éú³É£¬ÀàÐÍÎª£º django.db.models.manager.Manager£¬¿ÉÒÔ°ÑËü½Ð Ä£ÐÍ¹ÜÀíÆ÷;
+
+objectsÄ£ÐÍ¹ÜÀíÆ÷ÖÐÌá¹©ÁËÒ»Ð©²éÑ¯Êý¾ÝµÄ·½·¨£º
+
+objects¹ÜÀíÆ÷ÖÐµÄ·½·¨	 	·µ»ØÀàÐÍ	×÷ÓÃ
+Ä£ÐÍÀà.objects.get()		Ä£ÐÍ¶ÔÏó	·µ»ØÒ»¸ö¶ÔÏó£¬ÇÒÖ»ÄÜÓÐÒ»¸ö: Èç¹û²éµ½¶àÌõÊý¾Ý£¬Ôò±¨£ºMultipleObjectsReturned Èç¹û²éÑ¯²»µ½Êý¾Ý£¬Ôò±¨£ºDoesNotExist											
+Ä£ÐÍÀà.objects.filter()		QuerySet	·µ»ØÂú×ãÌõ¼þµÄ¶ÔÏó
+Ä£ÐÍÀà.objects.all()		QuerySet	·µ»ØËùÓÐµÄ¶ÔÏó
+Ä£ÐÍÀà.objects.exclude()	QuerySet	·µ»Ø²»ÂúÌõ¼þµÄ¶ÔÏó
+Ä£ÐÍÀà.objects.order_by()	QuerySet	¶Ô²éÑ¯½á¹û¼¯½øÐÐÅÅÐò
+Ä£ÐÍÀà.objects.aggregate()	×Öµä£¬ÀýÈç£º{'salary__avg': 9500.0}     ½øÐÐ¾ÛºÏ²Ù×÷Sum, Count, Max, Min, Avg
+Ä£ÐÍÀà.objects.count()		Êý×Ö		·µ»Ø²éÑ¯¼¯ÖÐ¶ÔÏóµÄÊýÄ¿
+
+
+3.Django×Ô´øÈÏÖ¤ÏµÍ³£¨authenticate()º¯Êý£©
 from django.contrib.auth import authenticate,login
-	åªéœ€è¦æŠŠç”¨æˆ·åå’Œå¯†ç è¾“å…¥ç»™è¿™ä¸ªå‡½æ•°è‡ªåŠ¨ä¼šä¸Žæ•°æ®åº“é‡Œé¢ç”¨æˆ·åå’Œå¯†ç è¿›è¡ŒåŒ¹é…
-ä½¿ç”¨Djangoçš„è®¤è¯ç³»ç»Ÿè®°å½•ç”¨æˆ·ç™»å½•çŠ¶æ€loginï¼ˆrequestï¼Œ userï¼‰
-æ³¨ï¼šrequestç”¨æ¥èŽ·å–sessionï¼Œuserä¸ºç”¨æˆ·å
+	Ö»ÐèÒª°ÑÓÃ»§ÃûºÍÃÜÂëÊäÈë¸øÕâ¸öº¯Êý×Ô¶¯»áÓëÊý¾Ý¿âÀïÃæÓÃ»§ÃûºÍÃÜÂë½øÐÐÆ¥Åä
+Ê¹ÓÃDjangoµÄÈÏÖ¤ÏµÍ³¼ÇÂ¼ÓÃ»§µÇÂ¼×´Ì¬login£¨request£¬ user£©
+×¢£ºrequestÓÃÀ´»ñÈ¡session£¬userÎªÓÃ»§Ãû
 	
-4.è®¾ç½®sessionæœ‰æ•ˆæœŸ
-request.session.set_expiry(None)ç”¨æ¥è®°å½•ç”¨æˆ·åï¼Œæµè§ˆå™¨é‡Œé¢çš„cookieè®°å½•ç”¨æˆ·session_id,è€Œsession_idå­˜å‚¨åœ¨
-æœåŠ¡å™¨é‡Œï¼Œä¹Ÿå°±æ˜¯è‡ªå¸¦è®¤è¯ç³»ç»Ÿè®°å½•ç”¨æˆ·ç™»å½•çŠ¶æ€å°±ä¿å­˜äº†
-ç™»å½•-> ä¿å­˜ç”¨æˆ·çš„sessionæ•°æ® 
-åªè¦æµè§ˆå™¨ä¸­cookieèƒ½å¤Ÿåœ¨è®¿é—®çš„æ—¶å€™å¸¦ä¸Šsession_id,
-        ç”¨æˆ·è®¿é—®å…¶ä»–é¡µé¢ï¼Œä¸éœ€è¦å†æ¬¡ç™»å½•
-å¦‚æžœcookieä¸­æ²¡æœ‰session_idï¼Œè®¿é—®çš„æ—¶å€™åŽç«¯æ— æ³•è¯†åˆ«ç”¨æˆ·ï¼Œè¦æ±‚ç”¨æˆ·ä»Žæ–°ç™»å½•
+4.ÉèÖÃsessionÓÐÐ§ÆÚ
+request.session.set_expiry(None)ÓÃÀ´¼ÇÂ¼ÓÃ»§Ãû£¬ä¯ÀÀÆ÷ÀïÃæµÄcookie¼ÇÂ¼ÓÃ»§session_id,¶øsession_id´æ´¢ÔÚ
+·þÎñÆ÷Àï£¬Ò²¾ÍÊÇ×Ô´øÈÏÖ¤ÏµÍ³¼ÇÂ¼ÓÃ»§µÇÂ¼×´Ì¬¾Í±£´æÁË
+µÇÂ¼-> ±£´æÓÃ»§µÄsessionÊý¾Ý 
+Ö»Òªä¯ÀÀÆ÷ÖÐcookieÄÜ¹»ÔÚ·ÃÎÊµÄÊ±ºò´øÉÏsession_id,
+        ÓÃ»§·ÃÎÊÆäËûÒ³Ãæ£¬²»ÐèÒªÔÙ´ÎµÇÂ¼
+Èç¹ûcookieÖÐÃ»ÓÐsession_id£¬·ÃÎÊµÄÊ±ºòºó¶ËÎÞ·¨Ê¶±ðÓÃ»§£¬ÒªÇóÓÃ»§´ÓÐÂµÇÂ¼
 
 
-5.Django-Redisæ‰©å±•
-Redisç”¨æ¥ä¿å­˜sessionçš„æ•°æ®åº“ï¼Œå’Œcacheçš„æ•°æ®åº“
+5.Django-RedisÀ©Õ¹
+RedisÓÃÀ´±£´æsessionµÄÊý¾Ý¿â£¬ºÍcacheµÄÊý¾Ý¿â
 
-ä¸ºä½•è¦ç”¨ django-redis ?
-å› ä¸º:
-æŒç»­æ›´æ–°
-æœ¬åœ°åŒ–çš„ redis-py URL ç¬¦å·è¿žæŽ¥å­—ç¬¦ä¸²
-å¯æ‰©å±•å®¢æˆ·ç«¯
-å¯æ‰©å±•è§£æžå™¨
-å¯æ‰©å±•åºåˆ—å™¨
-é»˜è®¤å®¢æˆ·ç«¯ä¸»/ä»Žæ”¯æŒ
-å®Œå–„çš„æµ‹è¯•
-å·²åœ¨ä¸€äº›é¡¹ç›®çš„ç”Ÿäº§çŽ¯å¢ƒä¸­ä½œä¸º cache å’Œ session ä½¿ç”¨
-æ”¯æŒæ°¸ä¸è¶…æ—¶è®¾ç½®
-åŽŸç”Ÿè¿›å…¥ redis å®¢æˆ·ç«¯/è¿žæŽ¥æ± æ”¯æŒ
-é«˜å¯é…ç½® ( ä¾‹å¦‚ä»¿çœŸç¼“å­˜çš„å¼‚å¸¸è¡Œä¸º )
-é»˜è®¤æ”¯æŒ unix å¥—æŽ¥å­—
-æ”¯æŒ Python 2.7, 3.4, 3.5 ä»¥åŠ 3.6
+ÎªºÎÒªÓÃ django-redis ?
+ÒòÎª:
+³ÖÐø¸üÐÂ
+±¾µØ»¯µÄ redis-py URL ·ûºÅÁ¬½Ó×Ö·û´®
+¿ÉÀ©Õ¹¿Í»§¶Ë
+¿ÉÀ©Õ¹½âÎöÆ÷
+¿ÉÀ©Õ¹ÐòÁÐÆ÷
+Ä¬ÈÏ¿Í»§¶ËÖ÷/´ÓÖ§³Ö
+ÍêÉÆµÄ²âÊÔ
+ÒÑÔÚÒ»Ð©ÏîÄ¿µÄÉú²ú»·¾³ÖÐ×÷Îª cache ºÍ session Ê¹ÓÃ
+Ö§³ÖÓÀ²»³¬Ê±ÉèÖÃ
+Ô­Éú½øÈë redis ¿Í»§¶Ë/Á¬½Ó³ØÖ§³Ö
+¸ß¿ÉÅäÖÃ ( ÀýÈç·ÂÕæ»º´æµÄÒì³£ÐÐÎª )
+Ä¬ÈÏÖ§³Ö unix Ì×½Ó×Ö
+Ö§³Ö Python 2.7, 3.4, 3.5 ÒÔ¼° 3.6
 
-6.é€€å‡º
+6.ÍË³ö
 from django.contrib.auth import logout
-è°ƒç”¨logoutï¼ˆï¼‰æ—¶ï¼Œå½“å‰è¯·æ±‚çš„ä¼šè¯æ•°æ®è¢«å®Œå…¨æ¸…é™¤ï¼Œæ‰€æœ‰å­˜åœ¨çš„æ•°æ®éƒ½å°†æ¸…é™¤
+µ÷ÓÃlogout£¨£©Ê±£¬µ±Ç°ÇëÇóµÄ»á»°Êý¾Ý±»ÍêÈ«Çå³ý£¬ËùÓÐ´æÔÚµÄÊý¾Ý¶¼½«Çå³ý
 
-7.éªŒè¯ç”¨æˆ·æ˜¯å¦ç™»å½•
-ä½¿ç”¨login_required()è£…é¥°å™¨
-è£…é¥°å™¨åŠ åœ¨urlè·¯å¾„ä¸Šé¢ã€‚
+7.ÑéÖ¤ÓÃ»§ÊÇ·ñµÇÂ¼
+Ê¹ÓÃlogin_required()×°ÊÎÆ÷
+×°ÊÎÆ÷¼ÓÔÚurlÂ·¾¶ÉÏÃæ¡£
 
-8.å®žçŽ°è‡ªåŠ¨è·³è½¬é¡µé¢
-# ä»ŽæŸ¥è¯¢å­—ç¬¦ä¸²ä¸­å°è¯•èŽ·å–nextçš„å‚æ•°
+8.ÊµÏÖ×Ô¶¯Ìø×ªÒ³Ãæ
+# ´Ó²éÑ¯×Ö·û´®ÖÐ³¢ÊÔ»ñÈ¡nextµÄ²ÎÊý
         next = request.GET.get("next")
 
         if next is None:
             next = reverse("goods:index")
 
-        # è¿”å›ž,å¼•å¯¼è¿›å…¥ä¸»é¡µ
+        # ·µ»Ø,Òýµ¼½øÈëÖ÷Ò³
         return redirect(next)
 		
-9.ä¿å­˜ç”¨æˆ·åœ°å€ä¿¡æ¯ï¼Œè‡ªåŠ¨æ›´æ–°
+9.±£´æÓÃ»§µØÖ·ÐÅÏ¢£¬×Ô¶¯¸üÐÂ
 	address = user.address_set.latest("update_time")
-10.ç”¨æˆ·æµè§ˆè®°å½•
-	ç”¨æˆ·è®¿é—®å•†å“è¯¦æƒ…é¡µæ—¶å€™çš„è®°å½•ï¼Œå­˜å…¥Redisä¸­ï¼Œä¿å­˜sku_id,ä¸æ”¾åˆ°sessionæ•°æ®ä¸­ï¼Œ
-	æ˜¯å› ä¸ºæ–¹ä¾¿ç”¨æˆ·é€€å‡ºå†ç™»é™†çš„æ—¶å€™è¿˜èƒ½æŸ¥çœ‹åˆ°æ•°æ®ã€‚
-redisä¸­æ•°æ®åº“ç±»åž‹ key  value
-å­—ç¬¦ä¸²ã€åˆ—è¡¨ã€å“ˆå¸Œã€é›†åˆã€zset
-æ€è·¯1ï¼š æ“ä½œéº»çƒ¦
-å°†æ‰€æœ‰ç”¨æˆ·çš„åŽ†å²è®°å½•åœ¨redisä¸­ä¿å­˜ä¸€æ¡  å“ˆå¸Œ
-â€œhistoryâ€: {
-â€œuser_id_1â€: â€œ1,2,3,4,5â€,
-â€œuser_id_2â€: â€œ1,4,5,6,7
+10.ÓÃ»§ä¯ÀÀ¼ÇÂ¼
+	ÓÃ»§·ÃÎÊÉÌÆ·ÏêÇéÒ³Ê±ºòµÄ¼ÇÂ¼£¬´æÈëRedisÖÐ£¬±£´æsku_id,²»·Åµ½sessionÊý¾ÝÖÐ£¬
+	ÊÇÒòÎª·½±ãÓÃ»§ÍË³öÔÙµÇÂ½µÄÊ±ºò»¹ÄÜ²é¿´µ½Êý¾Ý¡£
+redisÖÐÊý¾Ý¿âÀàÐÍ key  value
+×Ö·û´®¡¢ÁÐ±í¡¢¹þÏ£¡¢¼¯ºÏ¡¢zset
+Ë¼Â·1£º ²Ù×÷Âé·³
+½«ËùÓÐÓÃ»§µÄÀúÊ·¼ÇÂ¼ÔÚredisÖÐ±£´æÒ»Ìõ  ¹þÏ£
+¡°history¡±: {
+¡°user_id_1¡±: ¡°1,2,3,4,5¡±,
+¡°user_id_2¡±: ¡°1,4,5,6,7
 }
-hget(â€œhistoryâ€, â€œuser_id_1â€) å–å€¼
-â€œ1ï¼Œ 2ï¼Œ3ï¼Œ4ï¼Œ5 â€
-æ€è·¯2ï¼š
-æ¯ä¸ªç”¨æˆ·ç»´æŠ¤ä¸€æ¡redisè®°å½•
-â€œhistory_user_1â€: [â€œ1â€, â€œ2â€, â€œ3â€ ]
-â€œhistory_user_2â€: [â€œ4â€, â€œ7â€,â€9â€ï¼Œâ€10â€]
+hget(¡°history¡±, ¡°user_id_1¡±) È¡Öµ
+¡°1£¬ 2£¬3£¬4£¬5 ¡±
+Ë¼Â·2£º
+Ã¿¸öÓÃ»§Î¬»¤Ò»Ìõredis¼ÇÂ¼
+¡°history_user_1¡±: [¡°1¡±, ¡°2¡±, ¡°3¡± ]
+¡°history_user_2¡±: [¡°4¡±, ¡°7¡±,¡±9¡±£¬¡±10¡±]
 lrange()
 lpush  rpush  ltrim
 
-æŸ¥è¯¢ï¼š åªåœ¨ç”¨æˆ·çš„ä¸ªäººä¿¡æ¯é¡µé¢ä¸­çœ‹åˆ°
-â€œkeyâ€ï¼š å­—ç¬¦ä¸²ã€åˆ—è¡¨ã€å“ˆå¸Œã€set  zset 
-ç”¨ä¸€æ¡è®°å½•ä¿å­˜æ‰€æœ‰äººçš„ä¿¡æ¯, ç»´æŠ¤èµ·æ¥ä¸æ–¹ä¾¿ï¼Œä¸é‡‡çº³
-â€œhistoryâ€: {â€œuser_1â€: â€œ1,2,3,4,5,6â€  , â€œuser_2â€:  â€œâ€}
-conn.hget(â€œhistoryâ€, â€œuser_1â€)
+²éÑ¯£º Ö»ÔÚÓÃ»§µÄ¸öÈËÐÅÏ¢Ò³ÃæÖÐ¿´µ½
+¡°key¡±£º ×Ö·û´®¡¢ÁÐ±í¡¢¹þÏ£¡¢set  zset 
+ÓÃÒ»Ìõ¼ÇÂ¼±£´æËùÓÐÈËµÄÐÅÏ¢, Î¬»¤ÆðÀ´²»·½±ã£¬²»²ÉÄÉ
+¡°history¡±: {¡°user_1¡±: ¡°1,2,3,4,5,6¡±  , ¡°user_2¡±:  ¡°¡±}
+conn.hget(¡°history¡±, ¡°user_1¡±)
 
-æ¯ä¸ªç”¨æˆ·ä¸€æ¡æ•°æ®ï¼Œå•ç‹¬ç»´æŠ¤
-â€œhistory_1â€:  [1,2,2,3,4,4]
-conn.lrange(â€œhistory_1â€,0, 4)
-# æŸ¥è¯¢æµè§ˆåŽ†å²è®°å½•, redis
-        # èŽ·å–django_redisæä¾›çš„redisè¿žæŽ¥å¯¹è±¡
+Ã¿¸öÓÃ»§Ò»ÌõÊý¾Ý£¬µ¥¶ÀÎ¬»¤
+¡°history_1¡±:  [1,2,2,3,4,4]
+conn.lrange(¡°history_1¡±,0, 4)
+# ²éÑ¯ä¯ÀÀÀúÊ·¼ÇÂ¼, redis
+        # »ñÈ¡django_redisÌá¹©µÄredisÁ¬½Ó¶ÔÏó
         redis_conn = get_redis_connection("default")
 
-        # æµè§ˆåŽ†å²è®°å½•åœ¨redisä¸­ä»¥åˆ—è¡¨ä¿å­˜
+        # ä¯ÀÀÀúÊ·¼ÇÂ¼ÔÚredisÖÐÒÔÁÐ±í±£´æ
         redis_key = "history_%s" % user.id
         sku_ids_list = redis_conn.lrange(redis_key, 0, 4)
         # sku_ids_list [7, 4, 8, 2 , 3]
 
 
-11.å¯†ç åŠ å¯†æ–¹å¼
+11.ÃÜÂë¼ÓÃÜ·½Ê½
 md5,sha1,sha256
-äºŒå¼ å›¾ç‰‡ä»¥äºŒè¿›åˆ¶çš„æ–¹å¼å‚¨å­˜ç»è¿‡md5åŠ å¯†åŽç”Ÿæˆå”¯ä¸€çš„å€¼åŒºåˆ«äºŽå…¶ä»–ä¸åŒå›¾ç‰‡ï¼Œè¿™ä¸ªå€¼å«åšæ–‡ä»¶æŒ‡çº¹
+¶þÕÅÍ¼Æ¬ÒÔ¶þ½øÖÆµÄ·½Ê½´¢´æ¾­¹ýmd5¼ÓÃÜºóÉú³ÉÎ¨Ò»µÄÖµÇø±ðÓÚÆäËû²»Í¬Í¼Æ¬£¬Õâ¸öÖµ½Ð×öÎÄ¼þÖ¸ÎÆ
 
 
 12.fastdfs
-FastDFS æ˜¯ç”¨ c è¯­è¨€ç¼–å†™çš„ä¸€æ¬¾å¼€æºçš„åˆ†å¸ƒå¼æ–‡ä»¶ç³»ç»Ÿã€‚
-FastDFS ä¸ºäº’è”ç½‘é‡èº«å®šåˆ¶ï¼Œ å……åˆ†è€ƒè™‘äº†å†—ä½™å¤‡ä»½ã€è´Ÿè½½å‡è¡¡ã€çº¿æ€§æ‰©å®¹ç­‰æœºåˆ¶ï¼Œ
-å¹¶æ³¨é‡é«˜å¯ç”¨ã€é«˜æ€§èƒ½ç­‰æŒ‡æ ‡ï¼Œä½¿ç”¨ FastDFS å¾ˆå®¹æ˜“æ­å»ºä¸€å¥—é«˜æ€§èƒ½çš„æ–‡ä»¶æœåŠ¡å™¨é›†ç¾¤æä¾›æ–‡ä»¶ä¸Šä¼ ã€ä¸‹è½½ç­‰æœåŠ¡
+FastDFS ÊÇÓÃ c ÓïÑÔ±àÐ´µÄÒ»¿î¿ªÔ´µÄ·Ö²¼Ê½ÎÄ¼þÏµÍ³¡£
+FastDFS Îª»¥ÁªÍøÁ¿Éí¶¨ÖÆ£¬ ³ä·Ö¿¼ÂÇÁËÈßÓà±¸·Ý¡¢¸ºÔØ¾ùºâ¡¢ÏßÐÔÀ©ÈÝµÈ»úÖÆ£¬
+²¢×¢ÖØ¸ß¿ÉÓÃ¡¢¸ßÐÔÄÜµÈÖ¸±ê£¬Ê¹ÓÃ FastDFS ºÜÈÝÒ×´î½¨Ò»Ì×¸ßÐÔÄÜµÄÎÄ¼þ·þÎñÆ÷¼¯ÈºÌá¹©ÎÄ¼þÉÏ´«¡¢ÏÂÔØµÈ·þÎñ
 
-13.tinymceæ‰©å±•
-from tinymce.models import HTMLFieldå¯Œæ–‡æœ¬ç¼–è¾‘å™¨
+13.tinymceÀ©Õ¹
+from tinymce.models import HTMLField¸»ÎÄ±¾±à¼­Æ÷
 
 
-14.Djangoè‡ªå¸¦å¯†ç åŠ å¯†ï¼ˆUserç±»ï¼‰
-	Django å†…ç½®çš„Userç±»æä¾›äº†ç”¨æˆ·å¯†ç çš„å­˜å‚¨ã€éªŒè¯ã€ä¿®æ”¹ç­‰åŠŸèƒ½ï¼Œå¯ä»¥å¾ˆæ–¹ä¾¿ä½ çš„ç»™ç”¨æˆ·æä¾›å¯†ç æœåŠ¡ã€‚
-é»˜è®¤çš„Ddjangoä½¿ç”¨pbkdf2_sha256æ–¹å¼æ¥å­˜å‚¨å’Œç®¡ç†ç”¨çš„å¯†ç ï¼Œå½“ç„¶æ˜¯å¯ä»¥è‡ªå®šä¹‰çš„ã€‚
 
-Django é€šè¿‡PASSWORD_HASHERS è®¾ç½®é€‰æ‹©è¦ä½¿ç”¨çš„ç®—æ³•ã€‚ä¸‹é¢æœ‰ä¸€ä¸ªåˆ—è¡¨ï¼Œåˆ—å‡ºäº†Django æ”¯æŒçš„å“ˆå¸Œç®—æ³•ç±»ã€‚
-åˆ—è¡¨çš„ç¬¬ä¸€ä¸ªå…ƒç´  (å³settings.PASSWORD_HASHERS[0]) ä¼šç”¨äºŽå‚¨å­˜å¯†ç ï¼Œ æ‰€æœ‰å…¶å®ƒå…ƒç´ éƒ½æ˜¯ç”¨äºŽéªŒè¯çš„å“ˆå¸Œå€¼ï¼Œå®ƒä»¬å¯ä»¥ç”¨äºŽæ£€æŸ¥çŽ°æœ‰çš„å¯†ç ã€‚
-æ„æ€æ˜¯å¦‚æžœä½ æ‰“ç®—ä½¿ç”¨ä¸åŒçš„ç®—æ³•ï¼Œä½ éœ€è¦ä¿®æ”¹PASSWORD_HASHERSï¼Œæ¥å°†ä½ æœ€å–œæ¬¢çš„ç®—æ³•åœ¨åˆ—è¡¨ä¸­æ”¾åœ¨é¦–ä½ã€‚
+
 
 
 
@@ -149,40 +144,188 @@ Django é€šè¿‡PASSWORD_HASHERS è®¾ç½®é€‰æ‹©è¦ä½¿ç”¨çš„ç®—æ³•ã€‚ä¸‹é¢æœ‰ä¸€ä¸ªåˆ
 
 
 14.WSGI
-åœ¨ç”Ÿäº§çŽ¯å¢ƒä¸­ä½¿ç”¨WSGIä½œä¸ºpython webçš„æœåŠ¡å™¨
-WSGIï¼šå…¨æ‹¼ä¸ºPython Web Server Gateway Interfaceï¼ŒPython WebæœåŠ¡å™¨ç½‘å…³æŽ¥å£ï¼Œæ˜¯Pythonåº”ç”¨ç¨‹åºæˆ–æ¡†æž¶å’ŒWebæœåŠ¡å™¨ä¹‹é—´çš„ä¸€ç§æŽ¥å£ï¼Œè¢«å¹¿æ³›æŽ¥å—ã€‚WSGIæ²¡æœ‰å®˜æ–¹çš„å®žçŽ°, å› ä¸ºWSGIæ›´åƒä¸€ä¸ªåè®®ï¼Œåªè¦éµç…§è¿™äº›åè®®ï¼ŒWSGIåº”ç”¨(Application)éƒ½å¯ä»¥åœ¨ä»»ä½•æœåŠ¡å™¨(Server)ä¸Šè¿è¡Œ
-é¡¹ç›®é»˜è®¤ä¼šç”Ÿæˆä¸€ä¸ªwsgi.pyæ–‡ä»¶ï¼Œç¡®å®šäº†settingsæ¨¡å—ã€applicationå¯¹è±¡
-applicationå¯¹è±¡ï¼šåœ¨Pythonæ¨¡å—ä¸­ä½¿ç”¨applicationå¯¹è±¡ä¸Žåº”ç”¨æœåŠ¡å™¨äº¤äº’
-settingsæ¨¡å—ï¼šç”¨äºŽè¿›è¡Œé¡¹ç›®é…ç½®
+ÔÚÉú²ú»·¾³ÖÐÊ¹ÓÃWSGI×÷Îªpython webµÄ·þÎñÆ÷
+WSGI£ºÈ«Æ´ÎªPython Web Server Gateway Interface£¬Python Web·þÎñÆ÷Íø¹Ø½Ó¿Ú£¬ÊÇPythonÓ¦ÓÃ³ÌÐò»ò¿ò¼ÜºÍWeb·þÎñÆ÷Ö®¼äµÄÒ»ÖÖ½Ó¿Ú£¬±»¹ã·º½ÓÊÜ¡£WSGIÃ»ÓÐ¹Ù·½µÄÊµÏÖ, ÒòÎªWSGI¸üÏñÒ»¸öÐ­Òé£¬Ö»Òª×ñÕÕÕâÐ©Ð­Òé£¬WSGIÓ¦ÓÃ(Application)¶¼¿ÉÒÔÔÚÈÎºÎ·þÎñÆ÷(Server)ÉÏÔËÐÐ
+ÏîÄ¿Ä¬ÈÏ»áÉú³ÉÒ»¸öwsgi.pyÎÄ¼þ£¬È·¶¨ÁËsettingsÄ£¿é¡¢application¶ÔÏó
+application¶ÔÏó£ºÔÚPythonÄ£¿éÖÐÊ¹ÓÃapplication¶ÔÏóÓëÓ¦ÓÃ·þÎñÆ÷½»»¥
+settingsÄ£¿é£ºÓÃÓÚ½øÐÐÏîÄ¿ÅäÖÃ
 
 15.uWSGI
-uWSGIå®žçŽ°äº†WSGIçš„æ‰€æœ‰æŽ¥å£ï¼Œæ˜¯ä¸€ä¸ªå¿«é€Ÿã€è‡ªæˆ‘ä¿®å¤ã€å¼€å‘äººå‘˜å’Œç³»ç»Ÿç®¡ç†å‘˜å‹å¥½çš„æœåŠ¡å™¨
-uWSGIä»£ç å®Œå…¨ç”¨Cç¼–å†™ï¼Œæ•ˆçŽ‡é«˜ã€æ€§èƒ½ç¨³å®š
+uWSGIÊµÏÖÁËWSGIµÄËùÓÐ½Ó¿Ú£¬ÊÇÒ»¸ö¿ìËÙ¡¢×ÔÎÒÐÞ¸´¡¢¿ª·¢ÈËÔ±ºÍÏµÍ³¹ÜÀíÔ±ÓÑºÃµÄ·þÎñÆ÷
+uWSGI´úÂëÍêÈ«ÓÃC±àÐ´£¬Ð§ÂÊ¸ß¡¢ÐÔÄÜÎÈ¶¨
 
 16.Nginx
-ä½¿ç”¨nginxçš„ä½œç”¨ä¸»è¦åŒ…æ‹¬è´Ÿè½½å‡è¡¡ã€åå‘ä»£ç†
-æ‰€æœ‰çš„é™æ€æ–‡ä»¶éƒ½ä¼šç”±nginxå¤„ç†ï¼Œä¸ä¼šå°†è¯·æ±‚è½¬åˆ°uwsgi
+Ê¹ÓÃnginxµÄ×÷ÓÃÖ÷Òª°üÀ¨¸ºÔØ¾ùºâ¡¢·´Ïò´úÀí
+ËùÓÐµÄ¾²Ì¬ÎÄ¼þ¶¼»áÓÉnginx´¦Àí£¬²»»á½«ÇëÇó×ªµ½uwsgi
 
 
-17.ä½¿ç”¨ç¼“å­˜
-å°†å¤„ç†è®¡ç®—çš„ç»“æžœå…ˆä¸´æ—¶ä¿å­˜èµ·æ¥ï¼Œä¸‹æ¬¡ä½¿ç”¨çš„æ—¶å€™å¯ä»¥å…ˆç›´æŽ¥ä½¿ç”¨ï¼Œå¦‚æžœæ²¡æœ‰è¿™ä¸ªå¤‡ä»½çš„æ•°æ®ï¼Œé‡æ–°è¿›è¡Œè®¡ç®—å¤„ç†
-å°†ç¼“å­˜æ•°æ®ä¿å­˜åœ¨å†…å®¹ä¸­ ï¼ˆæœ¬é¡¹ç›®ä¸­ä¿å­˜åœ¨redisä¸­ï¼‰
+17.Ê¹ÓÃ»º´æ
+½«´¦Àí¼ÆËãµÄ½á¹ûÏÈÁÙÊ±±£´æÆðÀ´£¬ÏÂ´ÎÊ¹ÓÃµÄÊ±ºò¿ÉÒÔÏÈÖ±½ÓÊ¹ÓÃ£¬Èç¹ûÃ»ÓÐÕâ¸ö±¸·ÝµÄÊý¾Ý£¬ÖØÐÂ½øÐÐ¼ÆËã´¦Àí
+½«»º´æÊý¾Ý±£´æÔÚÄÚÈÝÖÐ £¨±¾ÏîÄ¿ÖÐ±£´æÔÚredisÖÐ£©
 cache
-pickleæ¨¡å—  åºåˆ—åŒ–  pythonæ ‡å‡†æ¨¡å—
-pickleæ¨¡å—å¯ä»¥å°†pythonä¸­çš„æ•°æ®ç±»åž‹è½¬æ¢ä¸ºå­—ç¬¦ä¸²
-pickle.dumps(è¦è½¬æ¢çš„æ•°æ®)  -> è¿”å›žä¹‹åŽçš„å­—ç¬¦ä¸²
-pickle.loads(å­—ç¬¦ä¸²) -> pythonçš„æ•°æ® 
+pickleÄ£¿é  ÐòÁÐ»¯  python±ê×¼Ä£¿é
+pickleÄ£¿é¿ÉÒÔ½«pythonÖÐµÄÊý¾ÝÀàÐÍ×ª»»Îª×Ö·û´®
+pickle.dumps(Òª×ª»»µÄÊý¾Ý)  -> ·µ»ØÖ®ºóµÄ×Ö·û´®
+pickle.loads(×Ö·û´®) -> pythonµÄÊý¾Ý 
 
-ä¿®æ”¹äº†æ•°æ®åº“çš„æ•°æ®ï¼Œç›´æŽ¥åˆ é™¤ç¼“å­˜
-ç¼“å­˜è¦è®¾ç½®æœ‰æ•ˆæœŸ
-
-
+ÐÞ¸ÄÁËÊý¾Ý¿âµÄÊý¾Ý£¬Ö±½ÓÉ¾³ý»º´æ
+»º´æÒªÉèÖÃÓÐÐ§ÆÚ
 
 
+18.QueryDict¶ÔÏó
+¶¨ÒåÔÚdjango.http.QueryDict
+HttpRequest¶ÔÏóµÄÊôÐÔGET¡¢POST¶¼ÊÇQueryDictÀàÐÍµÄ¶ÔÏó
+Óëpython×Öµä²»Í¬£¬QueryDictÀàÐÍµÄ¶ÔÏóÓÃÀ´´¦ÀíÍ¬Ò»¸ö¼ü´øÓÐ¶à¸öÖµµÄÇé¿ö
+·½·¨get()£º¸ù¾Ý¼ü»ñÈ¡Öµ
+Èç¹ûÒ»¸ö¼üÍ¬Ê±ÓµÓÐ¶à¸öÖµ½«»ñÈ¡×îºóÒ»¸öÖµ
+Èç¹û¼ü²»´æÔÚÔò·µ»ØNoneÖµ£¬¿ÉÒÔÉèÖÃÄ¬ÈÏÖµ½øÐÐºóÐø´¦Àí
+dict.get('¼ü',Ä¬ÈÏÖµ)
+¿É¼òÐ´Îª
+dict['¼ü']
+·½·¨getlist()£º¸ù¾Ý¼ü»ñÈ¡Öµ£¬ÖµÒÔÁÐ±í·µ»Ø£¬¿ÉÒÔ»ñÈ¡Ö¸¶¨¼üµÄËùÓÐÖµ
+Èç¹û¼ü²»´æÔÚÔò·µ»Ø¿ÕÁÐ±í[]£¬¿ÉÒÔÉèÖÃÄ¬ÈÏÖµ½øÐÐºóÐø´¦Àí
+dict.getlist('¼ü',Ä¬ÈÏÖµ)
 
 
+19.CSRF
+CSRFÈ«Æ´ÎªCross Site Request Forgery£¬ÒëÎª¿çÕ¾ÇëÇóÎ±Ôì¡£
+CSRFÖ¸¹¥»÷ÕßµÁÓÃÁËÄãµÄÉí·Ý£¬ÒÔÄãµÄÃûÒå·¢ËÍ¶ñÒâÇëÇó¡£CSRFÄÜ¹»×öµÄÊÂÇé°üÀ¨£º
+ÒÔÄãÃûÒå·¢ËÍÓÊ¼þ£¬·¢ÏûÏ¢£¬µÁÈ¡ÄãµÄÕËºÅ£¬ÉõÖÁÓÚ¹ºÂòÉÌÆ·£¬ÐéÄâ»õ±Ò×ªÕË......Ôì³ÉµÄÎÊÌâ°üÀ¨£º¸öÈËÒþË½Ð¹Â¶ÒÔ¼°²Æ²ú°²È«¡£
+±£»¤Ô­Àí:
+	ËµÃ÷£ºµ±ÆôÓÃÖÐ¼ä¼þ²¢¼ÓÈë±êÇ©csrf_tokenºó£¬»áÏò¿Í»§¶Ëä¯ÀÀÆ÷ÖÐÐ´ÈëÒ»ÌõCookieÐÅÏ¢£¬ÕâÌõÐÅÏ¢µÄÖµÓëÒþ²ØÓò¿ØÖÆµÄvalueÊôÐÔÊÇÒ»ÖÂµÄ£¬
+	Ìá½»µ½·þÎñÆ÷ºó»áÏÈÓÉcsrfÖÐ¼ä¼þ½øÐÐÑéÖ¤£¬Èç¹û¶Ô±ÈÊ§°ÜÔò·µ»Ø403Ò³Ãæ£¬¶ø²»»á½øÐÐºóÐøµÄ´¦Àí
+
+20.ÖÐ¼ä¼þ
+DjangoÖÐµÄÖÐ¼ä¼þÊÇÒ»¸öÇáÁ¿¼¶¡¢µ×²ãµÄ²å¼þÏµÍ³£¬¿ÉÒÔ½éÈëDjangoµÄÇëÇóºÍÏìÓ¦´¦Àí¹ý³Ì£¬ÐÞ¸ÄDjangoµÄÊäÈë»òÊä³ö
+ÖÐ¼ä¼þµÄÉè¼ÆÎª¿ª·¢ÕßÌá¹©ÁËÒ»ÖÖÎÞÇÖÈëÊ½µÄ¿ª·¢·½Ê½£¬ÔöÇ¿ÁËDjango¿ò¼ÜµÄ½¡×³ÐÔ£¬ÆäËüµÄMVC¿ò¼ÜÒ²ÓÐÕâ¸ö¹¦ÄÜ£¬Ãû³ÆÎªIoC
+×Ü½á£ºÈç¹û¶à¸öÖÐ¼ä¼þÖÐ×¢²áÁËÏàÍ¬µÄ·½·¨£¬ÔòÏÈ×¢²áµÄºóÖ´ÐÐ
 
 
+21.ÏîÄ¿×Ü½á£º
+1.ÉúÏÊÀà²úÆ·  B2C  PCµçÄÔ¶ËÍøÒ³
+2.¹¦ÄÜÄ£¿é£ºÓÃ»§Ä£¿é  ÉÌÆ·Ä£¿é£¨Ê×Ò³¡¢ ËÑË÷¡¢ÉÌÆ·£© ¹ºÎï³µÄ£¿é  ¶©µ¥Ä£¿é£¨ÏÂµ¥¡¢ Ö§¸¶£©
+3.ÓÃ»§Ä£¿é£º×¢²á¡¢µÇÂ¼¡¢¼¤»î¡¢ÍË³ö¡¢¸öÈËÖÐÐÄ¡¢µØÖ·
+4.ÉÌÆ·Ä£¿é£ºÊ×Ò³¡¢ÏêÇé¡¢ÁÐ±í¡¢ËÑË÷
+5.¹ºÎï³µ£º Ôö¼Ó¡¢É¾³ý¡¢ÐÞ¸Ä¡¢²éÑ¯
+6.¶©µ¥Ä£¿é£ºÈ·ÈÏ¶©µ¥Ò³Ãæ¡¢Ìá½»¶©µ¥£¨ÏÂµ¥£©¡¢ÇëÇóÖ§¸¶¡¢²éÑ¯Ö§¸¶½á¹û¡¢ÆÀÂÛ
+7.djangoÄ¬ÈÏµÄÈÏÖ¤ÏµÍ³ AbstractUser
+8.itsdangerous  Éú³ÉÇ©ÃûµÄtoken £¨ÐòÁÐ»¯¹¤¾ß dumps  loads£©
+9.ÓÊ¼þ £¨djangoÌá¹©ÓÊ¼þÖ§³Ö ÅäÖÃ²ÎÊý  send_mail£©
+10. celery (ÖØµã  ÕûÌåÈÏÊ¶ Òì²½ÈÎÎñ)
+11. Ò³Ãæ¾²Ì¬»¯ £¨»º½âÑ¹Á¦  celery  nginx£©
+12. »º´æ£¨»º½âÑ¹Á¦£¬ ±£´æµÄÎ»ÖÃ¡¢ÓÐÐ§ÆÚ¡¢ÓëÊý¾Ý¿âµÄÒ»ÖÂÐÔÎÊÌâ£©
+13. FastDFS (·Ö²¼Ê½µÄÍ¼Æ¬´æ´¢·þÎñ£¬ ÐÞ¸ÄÁËdjangoµÄÄ¬ÈÏÎÄ¼þ´æ´¢ÏµÍ³)
+14. ËÑË÷£¨ whoosh  Ë÷Òý  ·Ö´Ê£©
+15. ¹ºÎï³µµÇÂ¼ÓëÎ´µÇÂ¼µÄ½á¾Ö·½°¸  cookie json redis ¹þÏ£
+16. ajax Ç°¶ËÓÃajaxÇëÇóºó¶Ë½Ó¿Ú
+17. ÊÂÎñ
+18. ¸ß²¢·¢µÄ¿â´æÎÊÌâ £¨±¯¹ÛËø¡¢ÀÖ¹ÛËø¡¢¶ÓÁÐ£©
+19.Ö§¸¶µÄÊ¹ÓÃÁ÷³Ì
+20. nginx £¨¸ºÔØ¾ùºâ  Ìá¹©¾²Ì¬ÎÄ¼þ£©
+21. Êý¾Ý¿âÖ÷´Ó £¨¶ÁÐ´·ÖÀë£©
+
+
+22.Ö§¸¶±¦¼ÓÃÜ
+ÓÃ»§Ë½Ô¿
+Ö§¸¶±¦¹«Ô¿
+ÔÚÉú³ÉË½Ô¿µÄÍ¬Ê±£¬Éú³É¹«Ô¿£¬¹«Ô¿ÊÇÓÉÓÃ»§¸øÖ§¸¶±¦µÄ
+²»¶Ô³Æ¼ÓÃÜ£¬Ê¹ÓÃsignatureÇ©Ãû×Ö¶ÎÓëÓÃ»§¶©µ¥ÐÅÏ¢Ò»Æð¼ÓÃÜ
+²éÑ¯Ö§¸¶½á¹ûÊ±£º
+	Ö§¸¶±¦Ë½Ô¿£¬Ê¹ÓÃsignatureÇ©Ãû£¬ÓÃ»§ÑéÖ¤signature£¬ÒÔ¼°ÑéÖ¤Ö§¸¶±¦Éí·ÝµÄ¹«Ô¿
+	
+ÔÚÕû¸ö¹ý³ÌÖÐÉú³ÉÁ½¶ÔÃÜÔ¿¶Ô
+
+23.´úÂë·¢²¼	
+	5.1 ´úÂë·¢²¼¼ò½é	
+		5.1.1 ´úÂë·¢²¼½éÉÜ
+			´úÂë·¢²¼£º
+				½«ÎÒÃÇµÄ´úÂë·Åµ½Ò»Ì¨¹«Ë¾µÄ»¥ÁªÍø·þÎñÆ÷ÉÏ
+			
+		5.1.2 ·¢²¼·½Ê½	
+			ÊÖ¹¤+½Å±¾
+	5.2 ´úÂë·¢²¼Á÷³Ì	
+		5.2.1 Á÷³Ì¼ò½é	
+			»ñÈ¡ -- ´ò°ü -- ´«Êä -- ¹Ø±Õ -- ½âÑ¹ -- ·ÅÖÃ -- ¿ªÆô -- ×Ô¼ì --¶ÔÍâ
+			
+		5.2.2 Á÷³ÌÏê½â
+			»ñÈ¡´úÂë:
+				È¨ÏÞ
+			´ò°ü´úÂë£º
+				tar
+			´«Êä´úÂë£º
+				scp
+			¹Ø±ÕÓ¦ÓÃ£º
+				ÏÈ¹Ø±ÕÀë¿Í»§½üµÄ£¬ºó¹Ø±ÕÀë¿Í»§Ô¶µÄ
+			½âÑ¹´úÂë£º
+				tar
+			·ÅÖÃ´úÂë£º
+				±¸·ÝÔ­ÎÄ¼þ + ·ÅÖÃÐÂÎÄ¼þ
+				×¢Òâ£º
+					Á½¸öÎÄ¼þµÄÃû³ÆÊÇÒ»ÑùµÄ£¬Ö»ÊÇÄÚÈÝ²»Í¬
+					¶ÔÕû¸öÓ¦ÓÃÏîÄ¿À´Ëµ£¬Á½¸öÎÄ¼þÃ»ÓÐÇø±ð
+			¿ªÆôÓ¦ÓÃ£º
+				ÏÈ¿ªÆôÀë¿Í»§Ô¶µÄ£¬ºó¿ªÆôÀë¿Í»§½üµÄ
+			¼ì²é£º
+				ä¯ÀÀÆ÷¡¢netstat -tnulp
+		5.2.3 ¼¼Êõ¹Ø¼üµã
+			ÎÄ¼þµÄÑ¹ËõºÍ½âÑ¹
+				Ñ¹Ëõ¸ñÊ½£ºtar zcvf Ñ¹ËõºóµÄÎÄ¼þÃû  ½«ÒªÑ¹ËõµÄÎÄ¼þ
+				½âÑ¹¸ñÊ½£ºtar xf Ñ¹ËõºóµÄÎÄ¼þÃû
+				²é¿´Ñ¹ËõÎÄ¼þ:zcat Ñ¹ËõÎÄ¼þ
+			Ê¾Àý£º
+				tar zcvf python.tar.gz python/
+				tar xf python1.tar.gz 
+				zcat python.tar.gz
+				
+			ÎÄ¼þµÄ´«Êä
+				ÃüÁî¸ñÊ½£º scp  Òª´«ÊäµÄÎÄ¼þ		Òª·ÅÖÃµÄÎ»ÖÃ
+				Ê¾Àý£º
+					scp python.tar.gz root@192.168.8.15:/root/
+					scp root@192.168.8.15:/root/python.tar.gz ./
+			 ÎÄ¼þµÄ±¸·Ý
+				Ê±¼ä´Á£ºÄêÔÂÈÕÊ±·ÖÃë£ºdate +%Y%m%d%H%M%S
+				±¸·Ý:
+					mv python.tar.gz python.tar.gz-$(date +%Y%m%d%H%M%S)
+
+µÚ 6 ÕÂ »·¾³²¿Êð	
+	6.1 »ù´¡»·¾³
+		6.1.1 »ù´¡Ä¿Â¼»·¾³	
+		6.1.2 Ö÷»úÍøÂç»·¾³	
+			Ö÷»ú¼äÃâÃÜÂëÈÏÖ¤
+				1¡¢±¾»úÉú³ÉÃÜÔ¿¶Ô				ÏßÉÏ»·¾³	8.14
+					ssh-keygen -t rsa
+				2¡¢¶Ô¶Ë»úÆ÷Ê¹ÓÃ¹«Ô¿ÎÄ¼þÈÏÖ¤		´úÂë²Ö¿â	8.15
+					1¡¢´´½¨ÈÏÖ¤ÎÄ¼þ
+						/root/.ssh/authorized_keys
+							ÎÄ¼þÄÚÈÝ£¬ÊÇÏßÉÏÖ÷»ú id_rsa.pubÎÄ¼þµÄÄÚÈÝ
+					2¡¢sshÈÏÖ¤£º
+						vim /etc/ssh/sshd_config
+							AuthorizedKeysFile      %h/.ssh/authorized_keys
+					3¡¢ssh·þÎñÖØÆô
+						/etc/init.d/ssh  restart
+				3¡¢ÑéÖ¤							ÏßÉÏ»·¾³	8.14
+					scp root@192.168.8.15:/root/python.tar.gz ./
+	6.2 ·½°¸·ÖÎö
+		6.2.1 ÐèÇó
+		6.2.2 ÐèÇó·ÖÎö
+		6.2.3 ²¿Êð·½°¸
+	6.3 ÏîÄ¿»·¾³²¿Êð	
+		6.3.1 pythonÐéÄâ»·¾³
+			Èí¼þ°²×°
+				apt-get install python-virtualenv -y
+			´´½¨ 
+				virtualenv -p /usr/bin/python3.5 venv
+			½øÈë
+				source venv/bin/activate
+			ÍË³ö
+				deactivate
+			É¾³ý
+				rm -rf venv	
+
+				
+		6.3.2 django»·¾³	
+		6.3.3 nginx»·¾³	
+		6.3.4 nginx´úÀídjango
 
 
 
