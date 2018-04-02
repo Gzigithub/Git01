@@ -4,4 +4,122 @@
 嗯~，那我接受下讲讲我参与的项目吧，我最近的一个项目是在我上家公司菇易（上海）电子商务有限公司，项目的名字叫链菇网，那么这个项目呢我们公司用的是Django框架写的，为什么使用Django呢？因为Django是走大而全的方向，适合中大型网站的开发，注重的是高效开发，它最出名的是其全自动化的管理后台：只需要使用起ORM，做简单的对象定义，它就能自动生成数据库结构、以及全功能的管理后台。Django是用python语言写的开源web开发框架，并遵循MVC设计。MVC框架的核心思想是：解耦，让不同的代码块之间降低耦合，增强代码的可扩展性和可移植性，实现向后兼容。
 Django提供的方便，也意味着Django内置的ORM跟框架内的其他模块耦合程度高，应用程序必须使用Django内置的ORM，否则就不能享受到框架内提供的种种基于其ORM的便利。那我负责的模块是完成用户信息（注册、登录、用户认证、用户中心）、商品搜索模块，在登录模块，如果用户是未注册的话会引导到注册页面 return redirect(reverse("users:login"))，
 在注册页面用户的信息会被Django中的User类加密存储到数据库里user = User.object.create_user(user_name, email, password)这时候生成用户激活的身份token（令牌）
-token = user.generate_active_token()拼接激活的连接url。发邮箱发送邮件使用celery发送，为什么用celery而不用线程池呢？，因为celery是异步发送，采取消息队列，横向扩展强，是两台服务器之间进行消息的对接，采用Redis来作为收发消息的中间人，来进行对消息的调度和缓存，Redis轻巧而且效率快，很适用缓存，celery异步发送激活邮件也相当于多线程的原理，只不过进行了封装，实现了并行，这样才使得程序运行快；而用线程池的话，虽然也可以实现消息的队列分发的功能，但在CPU有限的情况下，它还是一个线程接着一个线程进行，这样其实就是并发了，会拖慢整个过程的速度。
+token = user.generate_active_token()拼接激活的连接url。发邮箱发送邮件使用celery发送，为什么用celery而不用线程池呢？，因为celery是异步发送，采取消息队列，横向扩展强，是两台服务器之间进行消息的对接，采用Redis来作为收发消息的中间人，来进行对消息的调度和缓存，Redis轻巧而且效率快，很适用缓存，celery异步发送激活邮件也相当于多线程的原理，只不过进行了封装，实现了并行，这样才使得程序运行快；而用线程池的话，线程池的原理是我们把任务放进队列中去，然后开N个线程，每个线程都去队列中取一个任务，执行完了之后告诉系统说我执行完了，然后接着去队列中取下一个任务，直至队列中所有任务取空，退出线程。这个过程线程完成当前任务之后并不会销毁而是被安排处理下一个任务，因此能够避免多次创建线程，从而节省线程创建和销毁的开销，能够带来更好的性能和系统和系统稳定性。另外python的线程虽然是真正的线程，但解释器执行代码时，有一个GIL锁，任何python线程执行前必须先获得GIL锁，所以，多线程在python中只能交替执行。但对IO密集型的任务，多线程还是起到了很大效率提升，这就是协同式多任务。在服务器CPU核数有限的情况下，能够同时并发的线程数是有限的，并不是开得越多越好，以及线程切换是有开销资源的，如果线程切换过于频繁，反而会使性能降低。 登录可以直接使用django自带的认证系统
+        user = authenticate(username=user_name, password=password)
+在用户模块这里我们采用Redis的列表存储最近浏览历史记录	
+使用fastdfs来存储图片，返回的是图片地址
+搜索模块使用haystack是django的开源搜索框架，该框架支持Solr,Elasticsearch,Whoosh, *Xapian*搜索引擎，不用更改代码，直接切换引擎，减少代码量。
+搜索引擎使用Whoosh，这是一个由纯Python实现的全文搜索引擎，没有二进制文件等，比较小巧，配置比较简单，当然性能自然略低。
+中文分词Jieba，由于Whoosh自带的是英文分词，对中文的分词支持不是太好，故用jieba替换whoosh的分词组件。
+
+
+第二个web项目叫做约我高尔夫，高尔夫商务为主题的社交和服务平台，将成为高端社交领域的标志性平台，为会员提供快捷便利一站式服务，为高尔夫行业企业提供优质平台，平台实现多元化商业社交机会。该项目基于flask框架项目以前后端分离的形式实现具体功能业务，前后端交互数据形式主要使用json。后台接口负责处理业务逻辑，并提供响应数据，前端页面负责展示数据和效果。项目接口设计符合RestfulAPI风格。Flask相对于Django而言是轻量级的Web框架。和Django不同，Flask轻巧、简洁，通过定制第三方扩展来实现具体功能。
+可定制性，通过扩展增加其功能，这是Flask最重要的特点。Flask的两个主要核心应用是Werkzeug和模板引擎Jinja。
+项目以前后端分离的形式实现具体功能业务，前后端交互数据形式主要使用json。后台接口负责处理业务逻辑，并提供响应数据，前端页面负责展示数据和效果。项目接口设计符合RestfulAPI风格。
+Flask扩展：
+Flask-SQLalchemy：操作数据库；
+Flask-migrate：管理迁移数据库；
+Flask-Mail:邮件；
+Flask-WTF：表单；
+Flask-script：插入脚本；
+Flask-Login：认证用户状态；
+Flask-RESTful：开发REST API的工具；
+Flask-Bootstrap：集成前端Twitter Bootstrap框架；
+Flask-Moment：本地化日期和时间；
+
+第三方扩展：阿里云、云通信、captcha。
+项目模块：用户模块、高尔夫球场模块、支付模块、订单模块
+完成用户模块（注册、登录、用户认证）、订单模块的开发
+
+登录注册：用户名要求使用手机号进行注册，使用captcha实现图片验证码，图片验证码的生成使用
+UUID（全局唯一标识符，时间、硬件信息（Mac地址、IP地址等）、随机数、时间序列等，
+根据算法生成十六进制的随机数。UUID由前端生成，后端存储和验证）来区别其他图片验证码，图片验证码只验证一次，另外为防止恶意测试，
+在发送短信验证前，要求用户必须在图片验证码符合要求的情况下，才发送短信验证码。
+短信验证通过第三方云通信实现。图片验证码和短信验证码数据使用redis缓存。
+项目静态图片数据和个人头像设置，使用了第三方云存储服务器阿里云（1.不用本地维护，解决去重问题；2.维护图片的存储，文件名使用随机数使用MD5算法）。
+	表单数据提交为避免CSRF，使用了flask_wtf提供的CSRFProtect模块，
+前端通过ajax发送的头信息中携带token信息实现跨站请求保护。
+用户密码信息的存储使用了flask的核心之一Werkzeug中的sercurity的generate_password_hash(密码加密)和check_password_hash(验证密码)来实现密码的存储和验证。
+
+个人信息展示：提供修改个人用户昵称和头像信息(阿里云存储)的入口，如果用户未设置，
+默认用户名为手机号。查询个人订单信息的入口，以及用户退出功能。使用身份证进行实名认证。
+
+订单模块：
+订单：由用户选择使用球场的时间，前端根据用户选择的时间动态展示时间和金额，提交预订信息后。后台要根据用户选择的预订信息和数据库中的订单信息进行校验，确保场地不会被重复交易。
+		
+24.Scrapy 框架
+Scrapy是用纯Python实现一个为了爬取网站数据、提取结构性数据而编写的应用框架，用途非常广泛。
+框架的力量，用户只需要定制开发几个模块就可以轻松的实现一个爬虫，用来抓取网页内容以及各种图片，非常之方便。
+Scrapy 使用了 Twisted['tw?st?d](其主要对手是Tornado)异步网络框架来处理网络通讯，可以加快我们的下载速度，不用自己去实现异步框架，并且包含了各种中间件接口，可以灵活的完成各种需求。
+1）Scrapy 和 scrapy-redis的区别
+Scrapy 是一个通用的爬虫框架，但是不支持分布式，Scrapy-redis是为了更方便地实现Scrapy分布式爬取，而提供了一些以redis为基础的组件(仅有组件)。
+pip install scrapy-redis
+Scrapy-redis提供了下面四种组件（components）：(四种组件意味着这四个模块都要做相应的修改)
+Scheduler
+Duplication Filter
+Item Pipeline
+Base Spider
+总结
+最后总结一下scrapy-redis的总体思路：这套组件通过重写scheduler和spider类，实现了调度、spider启动和redis的交互。
+实现新的dupefilter和queue类，达到了判重和调度容器和redis的交互，因为每个主机上的爬虫进程都访问同一个redis数据库，所以调度和判重都统一进行统一管理，达到了分布式爬虫的目的。
+当spider被初始化时，同时会初始化一个对应的scheduler对象，这个调度器对象通过读取settings，配置好自己的调度容器queue和判重工具dupefilter。
+每当一个spider产出一个request的时候，scrapy引擎会把这个reuqest递交给这个spider对应的scheduler对象进行调度，
+scheduler对象通过访问redis对request进行判重，如果不重复就把他添加进redis中的调度器队列里。
+当调度条件满足时，scheduler对象就从redis的调度器队列中取出一个request发送给spider，让他爬取。
+当spider爬取的所有暂时可用url之后，scheduler发现这个spider对应的redis的调度器队列空了，
+于是触发信号spider_idle，spider收到这个信号之后，直接连接redis读取strart_url池，拿去新的一批url入口，然后再次重复上边的工作。
+
+
+
+25.Selenium
+Selenium是一个Web的自动化测试工具，最初是为网站自动化测试而开发的，类型像我们玩游戏用的按键精灵，可以按指定的命令自动操作，不同是Selenium 可以直接运行在浏览器上，它支持所有主流的浏览器（包括PhantomJS这些无界面的浏览器）。
+Selenium 可以根据我们的指令，让浏览器自动加载页面，获取需要的数据，甚至页面截屏，或者判断网站上某些动作是否发生。
+Selenium 自己不带浏览器，不支持浏览器的功能，它需要与第三方浏览器结合在一起才能使用。但是我们有时候需要让它内嵌在代码中运行，所以我们可以用一个叫 PhantomJS 的工具代替真实的浏览器
+PhantomJS
+PhantomJS 是一个基于Webkit的“无界面”(headless)浏览器，它会把网站加载到内存并执行页面上的 JavaScript，因为不会展示图形界面，所以运行起来比完整的浏览器要高效。
+如果我们把 Selenium 和 PhantomJS 结合在一起，就可以运行一个非常强大的网络爬虫了，这个爬虫可以处理 JavaScrip、Cookie、headers，以及任何我们真实用户需要做的事情
+1）Selenium 库里有个叫 WebDriver 的 API。WebDriver 有点儿像可以加载网站的浏览器，但是它也可以像 BeautifulSoup 或者其他 Selector 对象一样用来查找页面元素，与页面上的元素进行交互 (发送文本、点击等)，以及执行其他动作来运行网络爬虫。
+
+2）定位UI元素 (WebElements)
+关于元素的选取，有如下的API 单个元素选取
+find_element_by_id
+find_elements_by_name
+find_elements_by_xpath
+find_elements_by_link_text
+find_elements_by_partial_link_text
+find_elements_by_tag_name
+find_elements_by_class_name
+find_elements_by_css_selector
+
+3）鼠标动作链
+有些时候，我们需要再页面上模拟一些鼠标操作，比如双击、右击、拖拽甚至按住不动等，我们可以通过导入 ActionChains 类来做到。
+
+4）填充表单
+我们已经知道了怎样向文本框中输入文字，但是有时候我们会碰到<select> </select>标签的下拉框。直接点击下拉框中的选项不一定可行。
+Selenium专门提供了Select类来处理下拉框。 其实 WebDriver 中提供了一个叫 Select 的方法，可以帮助我们完成这些事情。
+
+5）弹窗处理
+当你触发了某个事件之后，页面出现了弹窗提示，处理这个提示或者获取提示信息方法如下：
+alert = driver.switch_to_alert()
+
+6）页面切换
+一个浏览器肯定会有很多窗口，所以我们肯定要有方法来实现窗口的切换。切换窗口的方法如下：
+driver.switch_to.window("this is window name")
+也可以使用 window_handles 方法来获取每个窗口的操作对象。例如：
+for handle in driver.window_handles:
+    driver.switch_to_window(handle)
+
+7）页面前进和后退
+操作页面的前进和后退功能：
+driver.forward()     #前进
+driver.back()        # 后退
+
+8）Cookies
+获取页面每个Cookies值，用法如下
+for cookie in driver.get_cookies():
+    print "%s=%s;" % (cookie['name'], cookie['value'])
+	
+9）页面等待
+隐式等待是等待特定的时间，显式等待是指定某一条件直到这个条件成立时继续执行。
+	
+		
