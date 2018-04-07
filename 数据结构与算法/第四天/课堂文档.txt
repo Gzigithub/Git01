@@ -1,0 +1,1264 @@
+﻿课程简介：	四章 共计16个小节
+	
+	第 1 章 基础
+		1.1 为什么学？	
+		1.2 简介	
+	第 2 章 快速入门	
+		2.1 入门案例
+		2.2 算法复杂度
+		2.3 性能分析模型详解	
+	第 3 章 数据结构 进阶
+		3.1 线性表	
+		3.2 顺序表
+		3.3 单向链表
+		3.4 双向链表
+		3.5 单向循环链表
+		3.6 栈	
+		3.7 队列
+		3.8 树
+	第 4 章 算法 进阶
+		4.1 排序
+		4.2 搜索
+		4.3 二叉树
+
+	第一天：1.1-3.2
+	第二天：3.3-3.5
+	第三天：3.6-4.1
+	第四天：4.1-4.3
+		
+		
+第 1 章 基础	
+	1.1 为什么学？
+
+			
+	1.2 简介	
+		什么是数据结构
+			存储、组织数据的方式
+			数据的结构有两种形式：
+				物理形式：顺序表、链表
+				逻辑形式：集合、线性、树形、图形
+		算法是什么？
+			方法和思路
+			算法复杂度：
+				时间复杂度：代码执行的时间
+				空间复杂度：代码运行的空间
+		数据结构 VS 算法
+			数据结构 + 算法 = 程序
+			
+		抽象数据类型:
+			数据 + 动作
+第 2 章 快速入门
+	2.1 入门案例	
+		2.1.1 解决方法一
+			全猜：
+				# 注意是三重循环
+				for a in range(1001):
+					for b in range(1001):
+						for c in range(1001):
+							if 1000 == a + b + c and a**2 + b**2 == c**2:
+								print("a,b,c: %d,%d,%d" % (a,b,c))
+								
+			算法特点：
+				量入出题题能解，行有意步步可为
+				
+				
+		2.1.2 解决方法二
+			# 解决方法一：2猜1算
+				for a in range(1001):
+					for b in range(1001):
+						c = 1000 - a - b
+						if a**2 + b**2 == c**2:
+							print("a,b,c: %d,%d,%d" % (a,b,c))
+		2.1.3 方法思考	
+			评判一个算法：
+				步骤数量+单位时间
+		2.1.4 步骤数量	
+	2.2 算法复杂度	
+		2.2.1 时间复杂度
+			什么是时间复杂度？
+				做一件事情需要花费多少时间
+				大O记法、规律趋势
+				渐近时间复杂度
+				
+				
+		2.2.2 时间复杂度分类
+			最优
+			最坏	---    关注点
+			平均
+		2.2.3 基本计算规则	
+		时间复杂度6规则：
+			1、基本操作：常数项 -- 一步到位
+				O(1)
+			2、顺序结构：	一步一步。。。
+				O(n)
+			3、循环结构：
+				嵌套：O(n3)
+				递归：O(logn)
+			4、分支：最坏时间复杂度
+			5、抓住干：最高次项
+			6、最坏时间复杂度
+				
+		2.2.4 空间复杂度	
+			目的：
+				空间换时间
+				
+		2.2.5 算法复杂度实践
+		2.2.6 常见时间复杂度
+			O(1) < O(logn) < O(n) < O(nlogn) < O(n2) < O(n3) < O(2n) < O(n!) < O(nn)
+			关键点；
+				数字最小，n越多，值越大
+				时间复杂度越小，效率越高，时间越短
+	2.3 性能分析模型详解
+		2.3.1 timeit模块简介
+			两句代码：
+				timer1 = timeit.Timer("T1()","from __main__ import T1")
+				timer1.timeit(1000)
+					注意：返回的是平均耗时
+					
+					
+					
+					
+		2.3.2 列表性能测试实践
+		import timeit
+		# 内置属性
+		def T1():
+			li = []
+			for i in range(1000):
+				li.append(i)
+
+		# 列表拼接
+		def T2():
+			li = []
+			for i in range(1000):
+				li = li + [i]
+
+		# 列表推导式
+		def T3():
+			li = [i for i in range(1000)]
+
+		# 属性转换
+		def T4():
+			li = list(range(1000))
+
+
+		if __name__ == '__main__':
+			timer1 = timeit.Timer("T1()", "from __main__ import T1")
+			cost1 = timer1.timeit(1000)
+			print("内置属性: %f" % (cost1))
+
+			timer2 = timeit.Timer("T2()", "from __main__ import T2")
+			cost2 = timer2.timeit(1000)
+			print("列表拼接: %f" % (cost2))
+
+			timer3 = timeit.Timer("T3()", "from __main__ import T3")
+			cost3 = timer3.timeit(1000)
+			print("列表推导: %f" % (cost3))
+
+			timer4 = timeit.Timer("T4()", "from __main__ import T4")
+			cost4 = timer4.timeit(1000)
+			print("属性转换: %f" % (cost4))
+			
+第 3 章 数据结构 进阶
+	3.1 线性表
+		3.1.1 线性表简介
+			什么是线性表？
+				将一大堆同类型的数据，按照某种关系，依次排列出来，就形成了一条线
+				特点：数据之间，只有前后关系
+				最基础+最广
+				
+			线性表分类：
+				顺序表：
+					连续的存储区
+				链表：
+					链接
+					链表有如下分类：
+						单向链表、双向链表、单向循环链表
+				
+	3.2 顺序表
+		3.2.1 顺序表形式
+		顺序表两种形式：
+			基本布局：同类		连续
+			元素外置：异类		跳转
+		3.2.2 顺序表结构
+			顺序表结构：
+				基本信息：存储空间大小+元素数量
+				存储区域
+				一旦定义好顺序表，对象就固定了
+			一体式：
+				存储表信息与元素存储区以连续的方式安排在一块存储区里，形成一个完整的顺序表对象。
+				特点：方便管理
+			分离式：
+				顺序表对象里保存基本信息(地址容量+元素个数)和元素存储空间的一个逻辑地址(A)，通过逻辑地址(A)找到真正的数据存储地址
+				特点：灵活
+				
+		3.2.3 顺序表实践
+			内容更改:
+				一体式：空间浪费
+				分离式：灵活，空间利用率高
+				
+			内容扩充：
+				线性增长：
+					好的：空间利用率高，
+					确定：操作频繁
+				倍数增长：
+					好的：操作不频繁，节省时间
+					坏到：空间利用率不高(哥不在乎)
+					
+		3.2.4 顺序表常见操作
+			顺序表的“增”操作：
+				插头：	保序，O(n)
+				插尾： 	保序，O(1)
+				乱插： 	非保序，O(1)
+				
+			“删”操作：
+				减头：	保序，O(n)
+				减尾： 	保序，O(1)
+				乱减： 	非保序，O(1)
+	3.3 单向链表	
+		3.3.1 单向链表简介	
+			单向链表是什么
+				最简单
+				基本单位叫“结点
+					元素存储区域(item)+下一元素地址(next)
+					
+			链表基本术语：
+				结点、头结点、尾结点、前驱结点、后继结点
+			
+			单向链表特点：
+				只要找到头结点，那么整个链表就能找全
+				尾结点中的“下一地址”内容为空(None)
+				保存单向链表，只需要保存头结点地址即可
+					头：找+保存
+					尾：空
+			
+			为什么用链表：
+				链表灵活，空间利用率高
+					
+		3.3.2 python 链表解析
+		3.3.3 实践 之 基本属性
+				class BaseNode(object):
+					def __init__(self,item):
+						self.item = item
+						self.next = None	
+				关键点：
+					对象属性，用构造方法来实现
+					
+				
+					
+		3.3.4 实践 之 操作分析
+			class SingleLinkList(object):
+				def __init__(self,node=None):
+					self.__head = node		
+
+				信息查看类：
+					链表是否为空：is_empty()	
+					链表元素数量：length()
+					链表内容查看：travel()
+					链表内容搜索: search(item)
+
+				内容增加类：
+					插头增:	add(item)
+					插尾增: append(item)
+					指定位置增: insert(pos,item)
+
+				内容删除类：
+					内容删除: remove(item)			
+		3.3.5 实践 之 查看	
+		
+			判空：
+				# 判读链表是否为空
+				def is_empty(self):
+					return  self.__head is None
+				关键点：
+					链表自动获取头结点
+					
+			数量：
+				# 获取链表的长度
+				def length(self):
+					cur = self.__head
+					count = 0
+					# 遍历所有节点
+					while cur is not None:
+						count += 1
+						cur = cur.next
+					# 返回计数器的值
+					return count	
+				关键点：
+					1、计数器+变量
+					2、循环退出条件：while cur is not None:
+					
+			查看所有内容：
+				# 获取链表的所有内容
+				def travel(self):
+					cur = self.__head
+					# 遍历所有节点
+					while cur is not None:
+						print(cur.item,end=" ")
+						cur = cur.next
+					# 返回计数器的值
+					print("")
+				关键点：
+					1、遍历：while cur is not None:
+					2、内容打印：print(cur.item,end=" ")
+					3、打印格式：print("")
+					
+			搜索：
+				# 获取链表的所有内容
+				def search(self,item):
+					cur = self.__head
+					# 遍历所有节点
+					while cur is not None:
+						if cur.item == item:
+							return item
+						cur = cur.next
+					return False	
+				关键点：
+					1、遍历：while cur is not None:
+					2、内容匹配：if cur.item == item:
+					3、错误返回：return False
+		
+		3.3.6 实践 之 增加	
+			头部增加：
+				# 增加头结点
+				def add(self,item):
+					node = BaseNode(item)
+					node.next = self.__head
+					self.__head = node		
+
+				关键点：
+					新结点的next指向旧的头结点：node.next = self.__head
+					链表头结点指向新结点：self.__head = node
+					
+				
+			尾部增加
+				# 尾部增加
+				def append(self,item):
+					node = BaseNode(item)
+					# 判空动作
+					if self.is_empty():
+						self.__head = node
+					# 找尾结点
+					else:
+						cur = self.__head
+						while cur.next is not None:
+							cur = cur.next
+						cur.next = node		
+				关键点：
+					空链表增加结点，就是增加头结点：self.__head = node
+					查找尾结点：while cur.next is not None
+					尾结点next属性变化：cur.next = node					
+				
+			指定位置增加：
+				# 指定位置增加'
+				def insert(self,pos,item):
+					node = BaseNode(item)
+					# 头尾增加情况
+					if pos <= 0:
+						self.add(item)
+					elif pos >= self.length():
+						self.append(item)
+					# 指定位置增加
+					else:
+						cur = self.__head
+						count = 0
+						while count < (pos-1):
+							count += 1
+							cur = cur.next
+						node.next = cur.next
+						cur.next = node		
+			关键点：
+				指定位置插入，肯定包括头和尾，所以活用已有方法：self.add(item)、self.append(item)
+				插入位置的判断：while count < (pos - 1)
+				新结点的next指向cur的下一个结点：node.next = cur.next
+				cur结点的next指向新结点：cur.next = node				
+		3.3.7 实践 之 删除	
+			删除内容位于头部结点：
+				# 删除
+				def remove(self,item):
+					cur = self.__head
+					while cur is not None:
+						if cur.item == item:
+							# 头部结点删除
+							if cur == self.__head:
+								self.__head = cur.next
+							return
+				关键点：
+					1、顺序：判空--内容匹配--位置--收尾
+					
+			删除完整代码
+				# 删除
+				def remove(self,item):
+					cur = self.__head
+					# 引入前驱结点标签
+					pre = None
+					while cur is not None:
+						if cur.item == item:
+							# 头部结点删除
+							if cur == self.__head:
+								self.__head = cur.next
+							# 其他位置删除
+							else:
+								pre.next = cur.next
+							return
+						pre = cur
+						cur = cur.next
+				关键点：
+					头删除：
+						判断的顺序：当前链表不为空-->删除的内容匹配-->内容所在位置
+						头结点的指向：self.__head = cur.next
+						删除节点后，退出循环：return
+					尾删除：
+						单向链表只能前找后，当前结点的上一结点:pre = None
+						删除节点后，前一结点next属性变化：pre.next = cur.next
+					内容不匹配：
+						内容不匹配，当前节点和前一节点同时后移：pre = cur 、 cur = cur.next	
+						
+		3.3.8 链表 VS 顺序表
+			结构上：
+				链表：灵活，跳转，消耗资源
+				顺序表：快
+			成本：
+						操作	链表	顺序表
+				访问元素		O(n)	O(1)
+				在头部插入/删除	O(1)	O(n)
+				在尾部插入/删除	O(n)	O(1)
+				在中间插入/删除	O(n)	O(n)				
+			
+	3.4 双向链表	
+		3.4.1 双向链表简介	
+			双向链表定义：
+				双向单链表叠加
+				三个属性：item、pre、next
+				特殊情况：尾结点next=None，头结点pre=None
+				
+		3.4.2 实践 之 基本属性
+		3.4.3 实践 之 操作分析
+		3.4.4 实践 之 增加	
+			头部增加：
+				# 双向链表头部增加结点
+				def add(self,item):
+					node = BaseNode(item)
+					node.next = self.__head
+					self.__head = node
+					# 如果链表不为空的情况
+					if node.next:
+						node.next.pre = node	
+				关键点：
+					空非空
+						新结点的next指向旧的头结点：node.next = self.__head
+						链表头结点指向新结点：self.__head = node
+						旧结点的pre属性变化：node.next.pre = node					
+					
+			尾部增加：
+				# 单向链表尾部增加
+				def append(self,item):
+					node = BaseNode(item)
+					if self.is_empty():
+						self.__head = node
+					else:
+						# 查找尾结点
+						cur = self.__head
+						while cur.next is not None:
+							cur = cur.next
+						# 属性变化
+						cur.next = node
+						node.pre = cur
+				关键点：
+					空链表增加结点，就是增加头结点：self.__head = node
+					查找尾结点：while cur.next is not None
+					新结点的pre属性变化：node.pre = cur
+					尾结点next属性变化：cur.next = node	
+			指定位置增
+					# 指定位置增加
+					def insert(self,pos,item):
+						node = BaseNode(item)
+						# 增加头尾结点
+						if pos >= self.length():
+							self.append(item)
+						elif pos <= 0:
+							self.add(item)
+						else:
+							# 找指定位置
+							cur = self.__head
+							count = 0
+							while count < pos:
+								count += 1
+								cur = cur.next
+							# 相应的属性修改
+							cur.pre.next = node
+							node.pre = cur.pre
+							cur.pre = node
+							node.next = cur
+				关键点：	
+					修改属性时候，千万不要影响到后续的操作
+					指定位置插入，肯定包括头和尾，所以活用已有方法：self.add(item)、self.append(item)
+					插入位置的判断：while count < pos
+					新结点的next指向cur：node.next = cur
+					新结点的next指向cur的上一个结点：node.pre = cur.pre
+					cur结点上一结点的next指向新结点：cur.pre.next = node
+					cur结点上一结点的pre指向新结点：cur.pre = node					
+		3.4.5 实践 之 删除
+			头部结点内容删除
+				# 删除节点
+				def remove(self,item):
+					cur = self.__head
+					while cur is not None:
+						if cur.item == item:
+							if cur == self.__head:
+								self.__head = cur.next
+								if cur.next:
+									cur.next.pre = None
+							return
+				关键点：
+					1、顺序：判空--内容匹配--位置--收尾
+					2、空非空
+					
+			完整的删除代码：
+				# 删除节点
+				def remove(self,item):
+					cur = self.__head
+					while cur is not None:
+						if cur.item == item:
+							if cur == self.__head:
+								self.__head = cur.next
+								if cur.next:
+									cur.next.pre = None
+							else:
+								cur.pre.next = cur.next
+								if cur.next:
+									cur.next.pre = cur.pre
+							return
+						cur = cur.next
+				关键点：
+					头删除：
+						判断的顺序：当前链表不为空-->删除的内容匹配-->内容所在位置
+						头结点的指向：self.__head = cur.next
+						新头结点的pre指向：self.__head.pre = None
+						删除节点后，退出循环：return
+					尾删除：
+						删除节点后，前一结点next属性变化：cur.pre.next = cur.next
+					中间删除：
+						除了尾删除的一点，还有cur下一个节点的pre属性：cur.next.pre = cur.pre
+					内容不匹配：
+						当前节点后移即可：cur = cur.next	
+						
+	3.5 单向循环链表	
+		3.5.1 单向循环链表简介
+			单向循环链表的定义：
+				环
+				尾结点的next指向 self.__head
+				
+		3.5.2 实践 之 基本属性
+		3.5.3 实践 之 操作分析
+			
+		3.5.4 实践 之 查看
+			获取单向循环链表的长度
+				# 获取单向循环链表的数量
+				def length(self):
+					if self.is_empty():
+						return 0
+					else:
+						cur = self.__head
+						count = 1
+						while cur.next is not self.__head:
+							count += 1
+							cur = cur.next
+						return count
+				关键点：
+					1、循环遍历结束的时候，没有对尾结点进行技术
+					
+			获取单向循环链表的内容
+				# 获取单向循环链表的所有内容
+				def travel(self):
+					if self.is_empty():
+						print("None")
+						return
+					else:
+						cur = self.__head
+						while cur.next is not self.__head:
+							print(cur.item,end=" ")
+							cur = cur.next
+						print(cur.item)	
+				关键点：
+					1、循环遍历结束的时候，没有对尾结点输出内容
+					
+			搜索
+			   # 获取单向循环链表的指定内容
+				def search(self,item):
+					if self.is_empty():
+						return False
+					else:
+						# 除尾结点之外的所有节点内容判断
+						cur = self.__head
+						while cur.next is not self.__head:
+							if cur.item == item:
+								return cur.item
+							cur = cur.next
+						# 尾结点内容判断
+						if cur.item == item:
+							return cur.item
+						return False
+				关键点：
+					循环遍历的退出条件：while cur is not self.__head
+					内容的匹配：if cur.item == item
+					循环终止内容不匹配：return False
+		3.5.5 实践 之 增加
+			头部增加：
+				# 单向循环链表头部增加结点
+				def add(self,item):
+					node = BaseNode(item)
+					if self.is_empty():
+						self.__head = node
+						node.next = self.__head
+					else:
+						# 找尾结点
+						cur = self.__head
+						while cur.next is not self.__head:
+							cur = cur.next
+						# 尾结点处理
+						cur.next = node
+						node.next = self.__head
+						self.__head = node
+				关键点：
+					新结点的next指向旧的头结点：node.next = self.__head
+					链表头结点指向新结点：self.__head = node
+					非空链表的尾结点查找：while cur.next is not self.__head
+					尾结点的next属性变化：cur.next = node	
+
+			尾部增加：
+				   # 单向循环链表尾部增加结点
+					def append(self,item):
+						node = BaseNode(item)
+						if self.is_empty():
+							self.__head = node
+							node.next = self.__head
+						else:
+							# 找尾结点
+							cur = self.__head
+							while cur.next is not self.__head:
+								cur = cur.next
+							# 尾结点处理
+							cur.next = node
+							node.next = self.__head		
+				关键点：
+					新结点的next指向旧的头结点：node.next = self.__head
+					链表头结点指向新结点：self.__head = node
+					非空链表的尾结点查找：while cur.next is not self.__head
+					尾结点的next属性变化：cur.next = node	
+					
+			指定位置增加
+				# 指定位置增加'
+				def insert(self,pos,item):
+					node = BaseNode(item)
+					# 头尾增加情况
+					if pos <= 0:
+						self.add(item)
+					elif pos >= self.length():
+						self.append(item)
+					# 指定位置增加
+					else:
+						cur = self.__head
+						count = 0
+						while count < (pos-1):
+							count += 1
+							cur = cur.next
+						node.next = cur.next
+						cur.next = node
+						
+				关键点：
+					1、方法重用
+					2、插入位置的确定 (pos-1)
+					3、前后结点的属性更改
+					
+		3.5.6 实践 之 删除
+			删除头位置节点：
+				# 删除
+				def remove(self,item):
+					# 获取头信息，cur标签用于删除节点
+					cur = self.__head
+					# 判断内容是否为空
+					while cur is not None:
+						if cur.item == item:
+							# 获取头位置
+							if cur == self.__head:
+								# 找尾结点
+								tnode = self.__head
+								while tnode.next is not self.__head:
+									tnode = tnode.next
+								# 退出循环就是尾结点
+								self.__head = cur.next
+								tnode.next = self.__head
+							return
+			关键点：
+				1、顺序：判空--内容匹配--位置--收尾
+				2、首位之前动作：
+					找尾结点
+				3、相关属性变化
+	
+		完整删除：
+			# 删除
+			def remove(self,item):
+				# 获取头信息，cur标签用于删除节点
+				cur = self.__head
+				pre = None
+				# 判断内容是否为空（非尾结点）
+				while cur.next is not self.__head:
+					if cur.item == item:
+						# 获取头位置
+						if cur == self.__head:
+							# 找尾结点
+							tnode = self.__head
+							while tnode.next is not self.__head:
+								tnode = tnode.next
+							# 退出循环就是尾结点
+							self.__head = cur.next
+							tnode.next = self.__head
+						else:
+							pre.next = cur.next
+						return
+					pre = cur
+					cur = cur.next
+
+				#对尾结点进行处理：
+				if cur.item == item:
+					if cur == self.__head:
+						self.__head = None
+					else:
+						pre.next = self.__head
+				return False
+			关键点分析：
+				1、非尾结点情况
+					1、顺序：判空--内容匹配--位置--收尾
+					2、首位之前动作：找尾结点
+					3、前后结点的属性更改
+				2、尾结点情况：
+					1、顺序：内容匹配--位置
+						单节点：
+							处理后为空
+						非单节点：
+							前一节点的next属性指向为链表的头self.__head
+	3.6  栈(简单)	
+		3.6.1 栈的简介
+			栈概念：
+				数据结构
+				只在一端操作(操作的端在栈顶)
+				后进先出
+			六术语：
+				栈顶、栈底、栈顶元素、栈底元素、入栈(压栈)、出栈
+				
+		3.6.2 栈的实践	
+			list.append() list.pop()
+			
+	3.7 队列(简单)	
+		3.7.1 队列简介	
+			单向队列：
+				数据结构
+				只在一端操作(尾进，头出)
+				先进先出
+				
+			
+		3.7.2 队列的实践	
+		3.7.3 双端队列(了解)
+			双端队列：
+				数据结构
+				两端操作(进出)
+				
+			双端实践：
+				list.append() list.pop()
+				list.insert() list.pop(0)
+	3.8 树	
+		3.8.1 树简介
+			基本概念:
+				数据结构、基本单位是节点。两关系(前后+层次)
+			基本特点：
+				每个节点有零个或多个子节点；
+				没有父节点的节点称为根节点；
+				每一个非根节点有且只有一个父节点
+			基本术语：
+				父子、叶子、节点的度、层次、树高度、树的度
+			树分类：
+				有序：二叉树
+				无序
+			树的存储：
+				顺序存储：
+					前后关系：上到下，左到右
+				链式存储：
+					链表结点属性：数据+其他结点的地址
+				节点间关系：
+					父节点和子节点关系：
+						父节点位置 i,找子节点：
+							左子节点位置：2i + 1	右子节点位置：2i + 2
+						左子节点位置 i，找父节点：
+							父节点位置：(i-1)/2
+						右子节点位置i，找父节点：
+							父节点位置：(i-2)/2
+		3.8.2 二叉树简介
+			简介：
+				一父两子
+			特点：
+				如上"节点间关系"
+				起始根节点编号为0：
+					编号为i的结点，其左节点 2i+1，右节点 2i＋2,其父节点的编号(i-1)/2或(i-2)/2
+			分类：
+				完美：除了叶子结点，都有2个子节点
+				完全：最后一层子不全，左对齐
+				完满：除了叶子，其他节点的度都是2，无所谓
+				
+		3.8.3 二叉树实践
+			结点基本属性：
+				class BaseNode(object):
+					def __init__(self,item):
+						self.item = item
+						self.lsub = None
+						self.rsub = None
+						
+			树的创建：
+				class Tree(object):
+					def __init__(self,node=None):
+						self.root = node
+
+					def add(self,item):
+						node = BaseNode(item)
+						# 树为空的情况
+						if self.root == None:
+							self.root = node
+						# 树不为空
+						else:
+							# d代处理节点队列，存在的原因：八个字
+							queue = []
+							queue.append(self.root)
+							# 关键点：******
+							while queue:
+								cur = queue.pop(0)
+								# 左子节点处理
+								if cur.lsub == None:
+									cur.lsub = node
+									return
+								else:
+									queue.append(cur.lsub)
+								# 右子节点处理：
+								if cur.rsub == None:
+									cur.rsub = node
+									return
+								else:
+									queue.append(cur.rsub)
+				关键点：
+					核心：从上到下、从左到右
+					1、空树的处理：						if self.root == None:
+					2、不空树情况，待处理父节点处理:	queue.append(self.root)
+					3、左右侧子节点处理：
+						空则增加数据:					if not cur.lsub:
+						不空，则把数据追加到待处理队列	queue.append(cur.lsub)
+					
+第 4 章 算法 进阶
+	4.1 排序
+		排序：
+			无序变有序
+		特点：
+			入无序，出有序
+			
+		4.1.1 排序算法简介
+			排序算法：
+				无序变有序的方法或思路
+			排序算法关键点：
+				无序：满变空
+				有序：空变满
+			稳定性：
+				相同元素"顺序"在排序前后有没有发生变化
+			常见算法：
+				基础：	冒泡、插入、选择				中级：	快速
+				高级：	堆、归并						其他：	基数、希尔、桶
+				
+				
+		4.1.2 冒泡排序
+			冒泡排序简介：
+				比较循环：相邻元素、大小比较、过程跟踪
+				冒泡循环：n个比较循环，完成将无序变有序的过程
+				
+			实践1：比较循环
+				def maopao(alist):
+					n = len(alist)
+					for i in range(n-1):
+						# 元素比较后替换   --- 核心目的：过程跟踪
+						if alist[i] > alist[i+1]:
+							alist[i],alist[i+1] = alist[i+1],alist[i]
+				关键点：
+					元素比较
+					比较次数
+					
+			完整实践：
+				def maopao(alist):
+					n = len(alist)
+					# 外部冒泡循环
+					for j in range(n-1,-1,-1):
+						count = 0
+						# 内部比较循环
+						for i in range(j):
+							# 元素比较后替换   --- 核心目的：过程跟踪
+							if alist[i] > alist[i+1]:
+								alist[i],alist[i+1] = alist[i+1],alist[i]
+								count += 1
+						if count == 0:
+							break
+				关键点：
+					1、最内部：元素替换
+						alist[i],alist[i+1] = alist[i+1],alist[i]
+					2、内部比较循环
+						for i in range(j):
+					3、外部冒泡循环
+						for j in range(n-1,-1,-1):
+					4、异常：本身就是一个有序序列，就没有比较进行外部的冒泡循环
+				
+			时间复杂度：
+				最优时间复杂度：O(n)
+				最坏时间复杂度：O(n2)
+				稳定性：稳定
+				
+		4.1.3 选择排序
+			选择排序简介
+				无序队列
+					最小和第一进行替换
+			
+			完整的代码实践：
+				def xuanze(alist):
+					n = len(alist)
+					# 外部选择循环：
+					for j in range(n-1):
+						# min_index 是mix标签，i是cur标签所在元素
+						min_index = j
+						for i in range(min_index+1,n):
+							if alist[i] < alist[min_index]:
+								min_index = i
+						# 元素替换：
+						if min_index != j:
+							alist[j],alist[min_index] = alist[min_index],alist[j]
+				关键点：
+					1、mix标签初始化：min_index = j
+					2、比较循环的范围：for i in range(j+1,n)
+					3、元素替换的条件：if min_index != j
+					4、排序次数范围的确定：for j in range(n-1)	
+					
+			时间复杂度：
+				最优时间复杂度：O(n2) 
+				最坏时间复杂度：O(n2)
+				稳定性：稳定
+					
+		4.1.4 插入排序
+			插入排序
+				打扑克
+			原理：
+				构建有序序列
+				无序1，有序尾，有序冒泡
+				循环往复
+			特点：
+				插入vs冒泡
+					插入算法的有序队列中用冒泡
+				插入vs选择：
+					选择-最小 
+					插入-第一
+					
+			完整代码实践：
+				def charu(alist):
+					n = len(alist)
+					# 无序队列元素放到有序队列
+					for i in range(n):
+						# 有序队列冒泡次数
+						for j in range(i,0,-1):
+							if alist[j] < alist[j-1]:
+								alist[j],alist[j-1] = alist[j-1],alist[j]
+							else:
+								break
+				关键点：
+					1、元素替换：if alist[j] < alist[j-1]
+					2、比较循环：for j in range(i,0,-1)
+					3、插入循环：for i in range(n):
+					
+			时间复杂度
+				最优时间复杂度：O(n)
+				最坏时间复杂度：O(n2)
+				稳定性：稳定
+				
+		4.1.5 希尔排序
+			希尔排序简介
+				缩小增量排序
+				1、偏移量的变化
+				2、插入排序
+				
+			完整代码实践：
+				def xier(alist):
+					n = len(alist)
+					gap = n // 2
+					while gap >= 1:
+						# 组件比较次数
+						for i in range(gap,n):
+							# 组内元素替换：
+							while (i-gap) >= 0:
+								if alist[i] < alist[i-gap]:
+									alist[i],alist[i-gap] = alist[i-gap],alist[i]
+									i = i - gap
+								else:
+									break
+						gap = gap // 2
+				关键点：
+					1、最内层：组内元素替换
+						alist[i],alist[i-gap] = alist[i-gap],alist[i]
+					2、每次希尔需要同时进行几组比较
+						组的数量和我们的下标偏移量一致，有gap确定分组的数量
+					3、进行多少次希尔排序
+						有希尔排序的核心决定：递归分组
+						
+			时间复杂度
+				最优时间复杂度：根据步长序列的不同而不同
+					O(nlogn)~O(n2)
+				最坏时间复杂度：O(n2)
+				稳定性：不稳定
+				
+			希尔排序理解核心：gap的作用
+				
+						
+		4.1.6 快速排序
+			快速排序简介:
+				挑元素、划分组、分组重复前两步
+					或：左手右手一个慢动作，右手左手慢动作重播
+						递归拆分到不能再拆
+						
+			第一次快排代码：
+				def kuaipai(alist):
+					# 准备工作
+					mid = alist[0]
+					left = 0
+					right = len(alist)-1
+
+					while left < right:
+						# 右标签移动
+						if right > left and alist[right] > mid:
+							right -= 1
+						alist[left] = alist[right]
+
+						# 左标签移动
+						if left < right and alist[left] < mid:
+							left += 1
+						alist[right] = alist[left]
+					# 中间元素归位
+					alist[right] = mid
+				关键点：
+					1、准备工作
+					2、左右移动
+					3、中间元素归位
+	
+			完整代码：
+				def kuaipai(alist,start,end):
+					if start < end:
+						# 准备工作
+						mid = alist[start]
+						left = start
+						right = end
+						while left < right:
+							# 右标签移动
+							if right > left and alist[right] > mid:
+								right -= 1
+							alist[left] = alist[right]
+
+							# 左标签移动
+							if left < right and alist[left] < mid:
+								left += 1
+							alist[right] = alist[left]
+						# 中间元素归位
+						alist[right] = mid
+
+						kuaipai(alist,start,left-1)
+						kuaipai(alist,left+1,end)
+				关键字：
+					1、函数自调用
+					2、左右两个子列表的边界确定
+					3、递归条件的确定
+					
+			算法分析：
+				最优时间复杂度：O(nlogn)
+				最坏时间复杂度：O(n2)
+				稳定性：不稳定
+				
+					
+		4.1.7 归并排序
+			归并排序简介：
+				关键字：拆分、排序、组间、小、新队列
+				一句话：分组排序，合并新队列
+						分组排序，组间比较，新增小，小移标
+						
+			分组代码实践
+				def fenzu(alist):
+					n = len(alist)
+					if n <= 1:
+						return alist
+					else:
+						mid = n // 2
+						zuo = fenzu(alist[:mid])
+						you = fenzu(alist[mid:])
+						return merge(zuo,you)	
+				关键点：
+					1、是否适合分组
+					2、左右两小组进行递归分组(即函数自调用)
+					3、对拆分后小组进行合并
+					
+			合并代码：
+				def merge(zuo,you):
+					# 准备工作
+					l,r = 0,0
+					zuo_len = len(zuo)
+					you_len = len(you)
+					result = []
+
+					# 组间元素比较
+					while l < zuo_len and r < you_len:
+						if zuo[l] <= you[r]:
+							result.append(zuo[l])
+							l += 1
+						else:
+							result.append(you[r])
+							r += 1
+
+					result += zuo[l:]
+					result += you[r:]
+					return  result
+				关键点：
+					1、三个准备工作
+					2、元素比较，新增小，小移标
+					3、空情况处理
+			算法分析：
+				最优时间复杂度：O(nlogn)
+				最坏时间复杂度：O(nlogn)
+				稳定性：稳定
+					
+		4.1.8 堆排序	
+			堆简介
+				顺序表、  近似完全二叉树
+				
+			堆分类：
+				大顶堆：任一节点都比其子节点大					 小顶堆：任一节点都比其子节点小
+				
+			堆排序原理：
+				头尾替换，恢复堆后再继续
+				
+			构建一个堆
+				从最后一个有子节点的节点开始构建，他的下标是[n/2 - 1]
+				
+			堆调整代码：
+				def tiaozheng(alist,low,high):
+					# 基本信息确定
+					i = low
+					j = 2 * 1 + 1
+					tmp = alist[i]
+					
+					#找最大的子节点
+					while j <= high:
+						if j+1 <= high and alist[j] < alist[j+1]:
+							j += 1
+						
+						# 最大的子节点和临时堆顶元素比较
+						if alist[j] > tmp:
+							alist[i] = alist[j]
+							i = j
+							j = 2 * i + 1
+						else:
+							break
+					alist[i] = tmp
+				关键点；
+					1、获取堆顶元素
+					2、子节点最大值获取
+					3、临时堆顶元素的确定
+					
+			堆排序代码：
+				def dui(alist):
+					n = len(alist)
+					#  构造堆
+					for i in range(int(n/2)-1,-1,-1):
+						tiaozheng(alist,i,n-1)
+
+					# 堆排序
+					for i in range(n-1,-1,-1):
+						alist[0],alist[i] = alist[i],alist[0]
+						tiaozheng(alist,0,i-1)
+					return alist
+				关键点：
+					1、堆排序有个前提，先要有个堆
+					2、堆排序本质是堆顶元素和堆尾元素替换
+					3、不管构造堆还是调整后操作都是：堆调整
+					
+			算法分析：
+				最优时间复杂度：O(nlogn)
+				最坏时间复杂度：O(nlogn)
+				稳定性：不稳定
+		4.1.9 排序总结
+			技术总结：
+				以从小到大进行排序为例：
+				冒泡排序：在无序队列中选择最小的移动到最左侧,
+				选择排序：定一个有序队列，从无序队列中选择最小的元素追加到有序队列的末尾
+				插入排序：定一个有序队列，从无序队列中选择第一个元素，插入到到有序队列的合适位置
+				希尔排序：通过对无序队列进行分组，然后再采用插入的排序方法
+				快速排序：指定一个元素，将无序队列拆分为大小两部分，然后层级递进，最终实现有序队列
+				归并排序：是将无序队列拆分，然后小组内排序，组间元素比较后在新队列中进行排序
+				堆 排 序：顺序表方式构造堆，首尾替换调整堆
+
+			总结小诗：
+				冒小左移选追加，插入合适分希尔，快速两半归新列，顺表构造首尾堆
+	4.2 搜索	
+		4.2.1 搜索简介
+		4.2.2 二分查找
+		4.2.3 递归二分实践	
+		4.2.4 普通二分实践	
+	4.3 二叉树
+		4.3.1 二叉树遍历	
+			遍历简介
+				所有元素都访问一次
+			遍历方法：
+				深度+广度
+			广度：
+				上到下、左到右
+			深度：
+				先序：根左右
+				中序：左根右
+				后序：左右根
+				
+		4.3.2 查询实践(广度优先)
+			# 广度优先遍历
+			def guangdu(self,alist):
+				# 判空
+				if self.root is None:
+					return False
+
+				queue = []
+				queue.append(self.root)
+
+				while len(queue) > 0:
+					node = queue.pop(0)
+					print(node.item,end=" ")
+					if node.lsub:
+						queue.append(node.lsub)
+					if node.rsub:
+						queue.append(node.rsub)		
+						
+		4.3.3 查询实践(深度优先)
+			# 深度之先序遍历
+			def xianxu(self,root):
+				if root:
+					# 根-左-右
+					print(root.item,end=" ")
+					self.xianxu(root.lsub)
+					self.xianxu(root.rsub)
+
+			# 深度之中序遍历
+			def zhongxu(self,root):
+				if root:
+					# 左-根-右
+					self.zhongxu(root.lsub)
+					print(root.item,end=" ")
+					self.zhongxu(root.rsub)
+
+			# 深度之后续遍历
+			def houxu(self,root):
+				if root:
+					# 左-右-根
+					self.houxu(root.lsub)
+					self.houxu(root.rsub)
+					print(root.item,end=" ")
+		4.3.4 二叉树反推(拓展)	
