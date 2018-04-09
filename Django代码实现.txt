@@ -1,120 +1,120 @@
 
 
 class RegisterView(View):
-	"""×¢²áÀàÊÓÍ¼"""
+	"""æ³¨å†Œç±»è§†å›¾"""
 	def get(self, request):
-		"""¶ÔÓ¦getÇëÇó·½Ê½µÄÂß¼­, ·µ»Ø×¢²áµÄÒ³Ãæ"""
+		"""å¯¹åº”getè¯·æ±‚æ–¹å¼çš„é€»è¾‘, è¿”å›æ³¨å†Œçš„é¡µé¢"""
         return render(request, "register.html")
 		
 	def post(self, request):
-		"""¶ÔÓ¦postÇëÇó·½Ê½µÄÂß¼­"""
-		# »ñÈ¡²ÎÊı
-		# ÓÃ»§Ãû¡¢ÃÜÂë¡¢È·ÈÏÃÜÂë¡¢ÓÊÏä¡¢ÊÇ·ñÍ¬ÒâĞ­Òé
+		"""å¯¹åº”postè¯·æ±‚æ–¹å¼çš„é€»è¾‘"""
+		# è·å–å‚æ•°
+		# ç”¨æˆ·åã€å¯†ç ã€ç¡®è®¤å¯†ç ã€é‚®ç®±ã€æ˜¯å¦åŒæ„åè®®
 		user_name = request.Post.get("user_name")
 		password = request.POST.get("pwd")
         password2 = request.POST.get("cpwd")
         email = request.POST.get("email")
         allow = request.POST.get("allow")
 		
-		# Ğ£Ñé²ÎÊı
-        # Âß¼­ÅĞ¶Ï  0 0.0 "" [] () {} None False ¼Ù
-        # all´¦ÀíËùÓĞµÄÔªËØ£¬Ö»ÓĞËùÓĞÔªËØ¶¼ÎªÕæ£¬allº¯Êı²Å»á·µ»ØÕæ£¬·ñÔò·µ»Ø¼Ù
+		# æ ¡éªŒå‚æ•°
+        # é€»è¾‘åˆ¤æ–­  0 0.0 "" [] () {} None False å‡
+        # allå¤„ç†æ‰€æœ‰çš„å…ƒç´ ï¼Œåªæœ‰æ‰€æœ‰å…ƒç´ éƒ½ä¸ºçœŸï¼Œallå‡½æ•°æ‰ä¼šè¿”å›çœŸï¼Œå¦åˆ™è¿”å›å‡
         if not all([user_name, password, password2, email, allow]):
-            # ²ÎÊı²»ÍêÕû
+            # å‚æ•°ä¸å®Œæ•´
             url = reverse("users:register")
             return redirect(url)
 			
-		# ÅĞ¶Ï¶ş´ÎÃÜÂëÊÇ·ñÒ»ÖÂ
+		# åˆ¤æ–­äºŒæ¬¡å¯†ç æ˜¯å¦ä¸€è‡´
 		if password != password2:
-			return render(request, "register.html", {"errmsg": "Á½´ÎÃÜÂë²»Ò»ÖÂ"})
+			return render(request, "register.html", {"errmsg": "ä¸¤æ¬¡å¯†ç ä¸ä¸€è‡´"})
 			
-		# ÅĞ¶ÏÓÊÏä¸ñÊ½ÊÇ·ñÕıÈ·
+		# åˆ¤æ–­é‚®ç®±æ ¼å¼æ˜¯å¦æ­£ç¡®
 		if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}', email):
-            # ²»Æ¥Åä
-            return render(request, "register.html", {"errmsg": "ÓÊÏä¸ñÊ½²»ÕıÈ·"})
+            # ä¸åŒ¹é…
+            return render(request, "register.html", {"errmsg": "é‚®ç®±æ ¼å¼ä¸æ­£ç¡®"})
 			
-		# ÅĞ¶ÏÊÇ·ñ¹´Ñ¡ÁËĞ­Òé
+		# åˆ¤æ–­æ˜¯å¦å‹¾é€‰äº†åè®®
         if allow != "on":
-            return render(request, "register.html", {"errmsg": "ÇëÍ¬ÒâÓÃ»§Ğ­Òé"})
+            return render(request, "register.html", {"errmsg": "è¯·åŒæ„ç”¨æˆ·åè®®"})
 			
-		# ÒµÎñ´¦Àí
-		# ±£´æÊı¾İµ½Êı¾İ¿âÖĞ
-		# create_user·½·¨ÊÇdjangoÓÃ»§ÈÏÖ¤ÏµÍ³Ìá¹©µÄ
-		# »á°ïÖúÎÒÃÇ¼ÓÃÜÃÜÂë²¢±£´æµ½Êı¾İ¿â
+		# ä¸šåŠ¡å¤„ç†
+		# ä¿å­˜æ•°æ®åˆ°æ•°æ®åº“ä¸­
+		# create_useræ–¹æ³•æ˜¯djangoç”¨æˆ·è®¤è¯ç³»ç»Ÿæä¾›çš„
+		# ä¼šå¸®åŠ©æˆ‘ä»¬åŠ å¯†å¯†ç å¹¶ä¿å­˜åˆ°æ•°æ®åº“
 		try:
 			user = User.object.create_user(user_name, email, password)
 		except IntegrityError as e:
-            # ±íÊ¾ÓÃ»§ÒÑ×¢²á
-            return render(request, "register.html", {"errmsg": "ÓÃ»§ÃûÒÑ´æÔÚ"})
+            # è¡¨ç¤ºç”¨æˆ·å·²æ³¨å†Œ
+            return render(request, "register.html", {"errmsg": "ç”¨æˆ·åå·²å­˜åœ¨"})
 
-		# ¸ü¸ÄÓÃ»§µÄ¼¤»î×´Ì¬£¬½«Ä¬ÈÏµÄÒÑ¼¤»î¸ÄÎªÎ´¼¤»î
+		# æ›´æ”¹ç”¨æˆ·çš„æ¿€æ´»çŠ¶æ€ï¼Œå°†é»˜è®¤çš„å·²æ¿€æ´»æ”¹ä¸ºæœªæ¿€æ´»
 		user.is_active = False
 		user.save()
 		
 		user.is_active = False
 		user.save()
 		
-		# Éú³ÉÓÃ»§¼¤»îµÄÉí·İtoken£¨ÁîÅÆ£©
+		# ç”Ÿæˆç”¨æˆ·æ¿€æ´»çš„èº«ä»½tokenï¼ˆä»¤ç‰Œï¼‰
 		token = user.generate_active_token()
 		
-		# Æ´½Ó¼¤»îµÄÁ¬½Ó
+		# æ‹¼æ¥æ¿€æ´»çš„è¿æ¥
         active_url = "http://127.0.0.1:8000/users/active/" + token
 
-        # ·¢ËÍ¼¤»îµÄÓÊ¼ş
-        # # send_mail(ÓÊ¼ş±êÌâ£¬ ÓÊ¼şÄÚÈİ£¬·¢¼şÈË£¬ ÊÕ¼şÈË£¬ html_message=html¸ñÊ½µÄÓÊ¼şÄÚÈİ)
+        # å‘é€æ¿€æ´»çš„é‚®ä»¶
+        # # send_mail(é‚®ä»¶æ ‡é¢˜ï¼Œ é‚®ä»¶å†…å®¹ï¼Œå‘ä»¶äººï¼Œ æ”¶ä»¶äººï¼Œ html_message=htmlæ ¼å¼çš„é‚®ä»¶å†…å®¹)
         # html_message = """
-        # <h1>ÌìÌìÉúÏÊÓÃ»§¼¤»î</h1>
-        # <h2>×ğ¾´µÄÓÃ»§%s, ¸ĞĞ»Äú×¢²áÌìÌìÉúÏÊ£¬ÇëÔÚ24Ğ¡Ê±ÄÚµã»÷ÈçÏÂÁ´½Ó¼¤»îÓÃ»§</h2>
+        # <h1>å¤©å¤©ç”Ÿé²œç”¨æˆ·æ¿€æ´»</h1>
+        # <h2>å°Šæ•¬çš„ç”¨æˆ·%s, æ„Ÿè°¢æ‚¨æ³¨å†Œå¤©å¤©ç”Ÿé²œï¼Œè¯·åœ¨24å°æ—¶å†…ç‚¹å‡»å¦‚ä¸‹é“¾æ¥æ¿€æ´»ç”¨æˆ·</h2>
         # <a href=%s>%s</a>
         # """ % (user_name, active_url, active_url)
-        # send_mail("ÌìÌìÉúÏÊÓÃ»§¼¤»î", "", settings.EMAIL_FROM, [email], html_message=html_message)
+        # send_mail("å¤©å¤©ç”Ÿé²œç”¨æˆ·æ¿€æ´»", "", settings.EMAIL_FROM, [email], html_message=html_message)
 
-        # Òì²½·¢ËÍÓÊ¼ş  ·Ç×èÈû
+        # å¼‚æ­¥å‘é€é‚®ä»¶  éé˜»å¡
         send_active_email.delay(user_name, active_url, email)
 
-        # ·µ»ØÖµ
+        # è¿”å›å€¼
         return redirect(reverse("users:login"))
 		
 #
-# # ¼¤»îÓÊ¼ş
+# # æ¿€æ´»é‚®ä»¶
 # user_id=4
 #
-# Çëµã»÷Õâ¸öÁ´½Ó¼¤»îÓÃ»§ http://127.0.0.1:8000/users/active/hfoiwefhoweifhowheofihwofhewoifhoewfhw
+# è¯·ç‚¹å‡»è¿™ä¸ªé“¾æ¥æ¿€æ´»ç”¨æˆ· http://127.0.0.1:8000/users/active/hfoiwefhoweifhowheofihwofhewoifhoewfhw
 #
-# ²éÑ¯×Ö·û´®  querystring
+# æŸ¥è¯¢å­—ç¬¦ä¸²  querystring
 #
 #
-# ä¯ÀÀÆ÷  GET ·ÃÎÊ  http://http://127.0.0.1:8000/users/active/4 -> ¸Ä±äÓÃ»§µÄ¼¤»î×´Ì¬
+# æµè§ˆå™¨  GET è®¿é—®  http://http://127.0.0.1:8000/users/active/4 -> æ”¹å˜ç”¨æˆ·çš„æ¿€æ´»çŠ¶æ€
 
-# ¼ÓÃÜ¼ÆËã¹ı³ÌÊÇ²»ÄÜ·´ÍÆµÄ
-# ²ÉÓÃÇ©ÃûĞòÁĞ»¯
+# åŠ å¯†è®¡ç®—è¿‡ç¨‹æ˜¯ä¸èƒ½åæ¨çš„
+# é‡‡ç”¨ç­¾ååºåˆ—åŒ–
 
 class UserActiveView(View):
-    """ÓÃ»§¼¤»îÊÓÍ¼"""
+    """ç”¨æˆ·æ¿€æ´»è§†å›¾"""
     def get(self, request, user_token):
         """
-        ÓÃ»§¼¤»î
+        ç”¨æˆ·æ¿€æ´»
         :param request:
-        :param user_token:  ÓÃ»§¼¤»îÁîÅÆ
+        :param user_token:  ç”¨æˆ·æ¿€æ´»ä»¤ç‰Œ
         :return:
         """
-        # ´´½¨×°»»¹¤¾ß¶ÔÏó£¨ĞòÁĞ»¯Æ÷£©
+        # åˆ›å»ºè£…æ¢å·¥å…·å¯¹è±¡ï¼ˆåºåˆ—åŒ–å™¨ï¼‰
         s = Serializer(settings.SECRET_KEY, constants.USER_ACTIVE_EXPIRES)
         try:
             data = s.loads(user_token)
         except SignatureExpired:
-            # ±íÊ¾token¹ıÆÚ
-            return HttpResponse("Á´½ÓÒÑ¹ıÆÚ")
+            # è¡¨ç¤ºtokenè¿‡æœŸ
+            return HttpResponse("é“¾æ¥å·²è¿‡æœŸ")
 
         user_id = data.get("user_id")
 
-        # ¸üĞÂÓÃ»§µÄ¼¤»î×´Ì¬
+        # æ›´æ–°ç”¨æˆ·çš„æ¿€æ´»çŠ¶æ€
         # User.objects.filter(id=user_id).update(is_active=True)
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            # Èç¹û²»´æÔÚ£¬»áÅ×³öÕâ¸öÒì³£
-            return HttpResponse("ÓÃ»§²»ÄÜ´æÔÚ")
+            # å¦‚æœä¸å­˜åœ¨ï¼Œä¼šæŠ›å‡ºè¿™ä¸ªå¼‚å¸¸
+            return HttpResponse("ç”¨æˆ·ä¸èƒ½å­˜åœ¨")
 
         user.is_active = True
         user.save()
@@ -123,62 +123,62 @@ class UserActiveView(View):
 		
 		
 class LoginView(View):
-    """µÇÂ¼"""
+    """ç™»å½•"""
     def get(self, request):
-        """Ìá¹©µÇÂ¼Ò³Ãæ"""
+        """æä¾›ç™»å½•é¡µé¢"""
         return render(request, "login.html")
 
-    # /users/login?next=/users/address  # request.GET  # ´Ó²éÑ¯×Ö·û´®ÖĞ»ñÈ¡Êı¾İ
+    # /users/login?next=/users/address  # request.GET  # ä»æŸ¥è¯¢å­—ç¬¦ä¸²ä¸­è·å–æ•°æ®
     # /users/login
     def post(self, request):
-        """µÇÂ¼´¦Àí"""
-        # »ñÈ¡²ÎÊı
-        user_name = request.POST.get("username")  # ´ÓÇëÇóÌå»ñÈ¡Êı¾İ
+        """ç™»å½•å¤„ç†"""
+        # è·å–å‚æ•°
+        user_name = request.POST.get("username")  # ä»è¯·æ±‚ä½“è·å–æ•°æ®
         password = request.POST.get("pwd")
 
-        # Ğ£Ñé²ÎÊı
+        # æ ¡éªŒå‚æ•°
         if not all([user_name, password]):
-            return render(request, "login.html", {"errmsg": "ÓÃ»§Ãû»òÃÜÂë²»ÄÜÎª¿Õ"})
+            return render(request, "login.html", {"errmsg": "ç”¨æˆ·åæˆ–å¯†ç ä¸èƒ½ä¸ºç©º"})
 
-        # ÒµÎñ´¦Àí
-        # Ô­Ê¼Ë¼Â·£º
-        # ÅĞ¶ÏÓÃ»§Ãû»òÃÜÂëÊÇ·ñÕıÈ·
-        # ¸ù¾İÓÃ»§Ãû²éÑ¯Êı¾İ¿â£¬»ñÈ¡ÓÃ»§µÄÃÜÂëĞÅÏ¢
+        # ä¸šåŠ¡å¤„ç†
+        # åŸå§‹æ€è·¯ï¼š
+        # åˆ¤æ–­ç”¨æˆ·åæˆ–å¯†ç æ˜¯å¦æ­£ç¡®
+        # æ ¹æ®ç”¨æˆ·åæŸ¥è¯¢æ•°æ®åº“ï¼Œè·å–ç”¨æˆ·çš„å¯†ç ä¿¡æ¯
         # user = User.objects.get(username=user_name)
-        # ¶ÔÓÃ»§ÊäÈëµÄµÇÂ¼ÃÜÂë½øĞĞ¼ÓÃÜ´¦Àí£¬È»ºóÓëÊı¾İ¿â²éÑ¯µÄÃÜÂë½øĞĞ¶Ô±È£¬Èç¹ûÏàÍ¬£¬±íÊ¾µÇÂ¼³É¹¦£¬·ñÔòÊ§°Ü
+        # å¯¹ç”¨æˆ·è¾“å…¥çš„ç™»å½•å¯†ç è¿›è¡ŒåŠ å¯†å¤„ç†ï¼Œç„¶åä¸æ•°æ®åº“æŸ¥è¯¢çš„å¯†ç è¿›è¡Œå¯¹æ¯”ï¼Œå¦‚æœç›¸åŒï¼Œè¡¨ç¤ºç™»å½•æˆåŠŸï¼Œå¦åˆ™å¤±è´¥
         # user_password = sha256(password)
         # if user_password == user.password
 
-        # ¿ÉÒÔÖ±½ÓÊ¹ÓÃdjango×Ô´øµÄÈÏÖ¤ÏµÍ³
+        # å¯ä»¥ç›´æ¥ä½¿ç”¨djangoè‡ªå¸¦çš„è®¤è¯ç³»ç»Ÿ
         user = authenticate(username=user_name, password=password)
 
         if user is None:
-            # ÈÏÖ¤Ê§°Ü
-            return render(request, "login.html", {"errmsg": "ÓÃ»§Ãû»òÃÜÂë´íÎó"})
+            # è®¤è¯å¤±è´¥
+            return render(request, "login.html", {"errmsg": "ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯"})
 
-        # ±íÊ¾ÓÃ»§ÃûºÍÃÜÂëÕıÈ·
-        # ÅĞ¶Ï¼¤»î×´Ì¬
+        # è¡¨ç¤ºç”¨æˆ·åå’Œå¯†ç æ­£ç¡®
+        # åˆ¤æ–­æ¿€æ´»çŠ¶æ€
         if user.is_active is False:
-            # ±íÊ¾ÓÃ»§Î´¼¤»î
-            return render(request, "login.html", {"errmsg": "ÓÃ»§Î´¼¤»î"})
+            # è¡¨ç¤ºç”¨æˆ·æœªæ¿€æ´»
+            return render(request, "login.html", {"errmsg": "ç”¨æˆ·æœªæ¿€æ´»"})
 
-        # µÇÂ¼³É¹¦
-        # ¼ÇÂ¼ÓÃ»§µÄµÇÂ¼×´Ì¬µ½sessionÖĞ
-        # Ê¹ÓÃdjangoµÄÈÏÖ¤ÏµÍ³¼ÇÂ¼ÓÃ»§µÇÂ¼
+        # ç™»å½•æˆåŠŸ
+        # è®°å½•ç”¨æˆ·çš„ç™»å½•çŠ¶æ€åˆ°sessionä¸­
+        # ä½¿ç”¨djangoçš„è®¤è¯ç³»ç»Ÿè®°å½•ç”¨æˆ·ç™»å½•
         login(request, user)
 
-        # ÅĞ¶ÏÓÃ»§ÊÇ·ñ¹´Ñ¡¼ÇÂ¼ÓÃ»§Ãû£¨¼´¼ÇÂ¼µÇÂ¼×´Ì¬£©
+        # åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å‹¾é€‰è®°å½•ç”¨æˆ·åï¼ˆå³è®°å½•ç™»å½•çŠ¶æ€ï¼‰
         remember = request.POST.get("remember")
         if remember == "on":
-            # ±íÊ¾¹´Ñ¡ÁË¼ÇÂ¼ÓÃ»§Ãû
-            # ÉèÖÃsessionÓĞĞ§ÆÚ, None±íÊ¾Ê¹ÓÃdjangoµÄÄ¬ÈÏsessionÓĞĞ§ÆÚ
+            # è¡¨ç¤ºå‹¾é€‰äº†è®°å½•ç”¨æˆ·å
+            # è®¾ç½®sessionæœ‰æ•ˆæœŸ, Noneè¡¨ç¤ºä½¿ç”¨djangoçš„é»˜è®¤sessionæœ‰æ•ˆæœŸ
             request.session.set_expiry(None)
         else:
-            # ±íÊ¾Î´¹´Ñ¡£¬ä¯ÀÀÆ÷¹Ø±Õ¼´Ê§Ğ§
+            # è¡¨ç¤ºæœªå‹¾é€‰ï¼Œæµè§ˆå™¨å…³é—­å³å¤±æ•ˆ
             request.session.set_expiry(0)
 
-        # ºÏ²¢ÓÃ»§µÇÂ¼ÓëÎ´µÇÂ¼µÄ¹ºÎï³µÊı¾İ£¬¼´cookieÓëredisµÄÊı¾İ
-        # È¡³öcookieÀïµÄ¹ºÎï³µÊı¾İ
+        # åˆå¹¶ç”¨æˆ·ç™»å½•ä¸æœªç™»å½•çš„è´­ç‰©è½¦æ•°æ®ï¼Œå³cookieä¸redisçš„æ•°æ®
+        # å–å‡ºcookieé‡Œçš„è´­ç‰©è½¦æ•°æ®
         cart_json_str = request.COOKIES.get("cart_info")
         if cart_json_str:
             cart_cookie_dict = json.loads(cart_json_str)
@@ -186,7 +186,7 @@ class LoginView(View):
             cart_cookie_dict = {}
             # {"1":20, "2":12}
 
-        # È¡³öredisÖĞµÄ¹ºÎï³µÊı¾İ
+        # å–å‡ºredisä¸­çš„è´­ç‰©è½¦æ•°æ®
         redis_conn = get_redis_connection("default")
 
         cart_redis_dict = redis_conn.hgetall("cart_%s" % user.id)
@@ -194,56 +194,56 @@ class LoginView(View):
             cart_redis_dict = {}
             # {b"1":b"12", ...}
 
-        # ºÏ²¢
+        # åˆå¹¶
         for sku_id, sku_count in cart_cookie_dict.items():
             sku_id = sku_id.encode()
 
-            # Èç¹ûredisµÄ¹ºÎï³µÖĞ£¬ÓĞÏàÍ¬ÉÌÆ·£¬ÊıÁ¿ÀÛ¼Ó
+            # å¦‚æœredisçš„è´­ç‰©è½¦ä¸­ï¼Œæœ‰ç›¸åŒå•†å“ï¼Œæ•°é‡ç´¯åŠ 
             if sku_id in cart_redis_dict:
 
                 sku_count += int(cart_redis_dict[sku_id])
 
                 cart_redis_dict[sku_id] = sku_count
 
-            # Èç¹ûredisÖĞÃ»ÓĞ£¬ÔòÉèÖÃ
+            # å¦‚æœredisä¸­æ²¡æœ‰ï¼Œåˆ™è®¾ç½®
             else:
                 cart_redis_dict[sku_id] = sku_count
 
-        # ½«ºÍ²¢µÄ¹ºÎï³µÊı¾İ±£´æµ½redisÖĞ
+        # å°†å’Œå¹¶çš„è´­ç‰©è½¦æ•°æ®ä¿å­˜åˆ°redisä¸­
         if cart_redis_dict:
-            # hmsetÒªÇóÉèÖÃµÄ×Öµä²»ÄÜÎª¿Õ£¬Ö»ÓĞºÏ²¢Ö®ºóµÄ×ÖµäÓĞÊı¾İ£¬²ÅÉèÖÃredis
+            # hmsetè¦æ±‚è®¾ç½®çš„å­—å…¸ä¸èƒ½ä¸ºç©ºï¼Œåªæœ‰åˆå¹¶ä¹‹åçš„å­—å…¸æœ‰æ•°æ®ï¼Œæ‰è®¾ç½®redis
             redis_conn.hmset("cart_%s" % user.id, cart_redis_dict)
 
-        # ´Ó²éÑ¯×Ö·û´®ÖĞ³¢ÊÔ»ñÈ¡nextµÄ²ÎÊı
+        # ä»æŸ¥è¯¢å­—ç¬¦ä¸²ä¸­å°è¯•è·å–nextçš„å‚æ•°
         next = request.GET.get("next")
 
         if next is None:
             next = reverse("goods:index")
 
-        # ´´½¨ÊÓÍ¼µÄ·µ»ØÏìÓ¦¶ÔÏó
+        # åˆ›å»ºè§†å›¾çš„è¿”å›å“åº”å¯¹è±¡
         resp = redirect(next)
 
-        # É¾³ıcookie
+        # åˆ é™¤cookie
         resp.delete_cookie("cart_info")
 
         return resp
 
 
 class LogoutView(View):
-    """ÍË³öÊÓÍ¼"""
+    """é€€å‡ºè§†å›¾"""
     def get(self, request):
-        """ÍË³ö"""
-        # Çå³ıÓÃ»§µÄµÇÂ¼Êı¾İ session
-        # Ê¹ÓÃdjango×Ô´øÈÏÖ¤ÏµÍ³µÄÍË³ö
+        """é€€å‡º"""
+        # æ¸…é™¤ç”¨æˆ·çš„ç™»å½•æ•°æ® session
+        # ä½¿ç”¨djangoè‡ªå¸¦è®¤è¯ç³»ç»Ÿçš„é€€å‡º
         logout(request)
 
-        # ÍË³öºó£¬Òıµ¼µ½µÇÂ¼Ò³Ãæ
+        # é€€å‡ºåï¼Œå¼•å¯¼åˆ°ç™»å½•é¡µé¢
         return redirect(reverse("users:login"))
 
 # class LoginRequiredMixin(object):
 #     @classmethod
 #     def as_view(cls, *args, **kwargs):
-#         # superÑ°ÕÒµ÷ÓÃÀàAddressViewµÄÏÂÒ»¸ö¸¸ÀàµÄas_view()
+#         # superå¯»æ‰¾è°ƒç”¨ç±»AddressViewçš„ä¸‹ä¸€ä¸ªçˆ¶ç±»çš„as_view()
 #         view = super(LoginRequiredMixin, cls).as_view(*args, **kwargs)
 #
 #         view = login_required(view)
@@ -252,33 +252,33 @@ class LogoutView(View):
 
 
 class AddressView(LoginRequiredMixin, View):
-    """ÓÃ»§µØÖ·"""
+    """ç”¨æˆ·åœ°å€"""
     def get(self, request):
-        """Ìá¹©µØÖ·Ò³ÃæÊı¾İ"""
-        # ²éÑ¯Êı¾İ¿â£¬»ñÈ¡ÓÃ»§µÄµØÖ·ĞÅÏ¢
-        # µ±Ç°ÇëÇóµÄÓÃ»§
+        """æä¾›åœ°å€é¡µé¢æ•°æ®"""
+        # æŸ¥è¯¢æ•°æ®åº“ï¼Œè·å–ç”¨æˆ·çš„åœ°å€ä¿¡æ¯
+        # å½“å‰è¯·æ±‚çš„ç”¨æˆ·
         user = request.user
 
-        # ·½Ê½Ò»£º
+        # æ–¹å¼ä¸€ï¼š
         # Address.objects.filter(user=user).order_by("-update_time")[0]
-        # ·½Ê½¶ş£º
+        # æ–¹å¼äºŒï¼š
         # user.address_set.order_by("-update_time")[0]
         try:
             address = user.address_set.latest("update_time")
         except Address.DoesNotExist:
-            # ±íÊ¾Êı¾İ¿âÖĞÃ»ÓĞÕâ¸öÓÃ»§µØÖ·Êı¾İ
+            # è¡¨ç¤ºæ•°æ®åº“ä¸­æ²¡æœ‰è¿™ä¸ªç”¨æˆ·åœ°å€æ•°æ®
             address = None
 
         return render(request, "user_center_site.html", {"address": address})
 
     def post(self, request):
-        """±£´æÓÃ»§µØÖ·Êı¾İ"""
+        """ä¿å­˜ç”¨æˆ·åœ°å€æ•°æ®"""
         user = request.user
 
         try:
             address = user.address_set.latest("update_time")
         except Address.DoesNotExist:
-            # ±íÊ¾Êı¾İ¿âÖĞÃ»ÓĞÕâ¸öÓÃ»§µØÖ·Êı¾İ
+            # è¡¨ç¤ºæ•°æ®åº“ä¸­æ²¡æœ‰è¿™ä¸ªç”¨æˆ·åœ°å€æ•°æ®
             address = None
 
         receiver_name = request.POST.get("receiver_name")
@@ -287,9 +287,9 @@ class AddressView(LoginRequiredMixin, View):
         mobile = request.POST.get("mobile")
 
         if not all([receiver_name, new_detail_address, zip_code, mobile]):
-            return render(request, "user_center_site.html", {"address": address, "errmsg": "Êı¾İ²»ÍêÕû"})
+            return render(request, "user_center_site.html", {"address": address, "errmsg": "æ•°æ®ä¸å®Œæ•´"})
 
-        # ±£´æÊı¾İµ½Êı¾İ¿âÖĞ
+        # ä¿å­˜æ•°æ®åˆ°æ•°æ®åº“ä¸­
         # new_address = Address(
         #     user=user,
         #     receiver_name=receiver_name,
@@ -314,32 +314,32 @@ class AddressView(LoginRequiredMixin, View):
 
 
 class UserInfoView(LoginRequiredMixin, View):
-    """ÓÃ»§»ù±¾ĞÅÏ¢Ò³Ãæ"""
+    """ç”¨æˆ·åŸºæœ¬ä¿¡æ¯é¡µé¢"""
     def get(self, request):
-        """Ìá¹©Ò³Ãæ"""
+        """æä¾›é¡µé¢"""
         user = request.user
 
-        # ²éÑ¯»ù±¾ĞÅÏ¢£¨µØÖ·ÁªÏµĞÅÏ¢£©
+        # æŸ¥è¯¢åŸºæœ¬ä¿¡æ¯ï¼ˆåœ°å€è”ç³»ä¿¡æ¯ï¼‰
         try:
             address = user.address_set.latest("update_time")
         except Address.DoesNotExist:
-            # ±íÊ¾Êı¾İ¿âÖĞÃ»ÓĞÕâ¸öÓÃ»§µØÖ·Êı¾İ
+            # è¡¨ç¤ºæ•°æ®åº“ä¸­æ²¡æœ‰è¿™ä¸ªç”¨æˆ·åœ°å€æ•°æ®
             address = None
 
-        # ²éÑ¯ä¯ÀÀÀúÊ·¼ÇÂ¼, redis
-        # »ñÈ¡django_redisÌá¹©µÄredisÁ¬½Ó¶ÔÏó
+        # æŸ¥è¯¢æµè§ˆå†å²è®°å½•, redis
+        # è·å–django_redisæä¾›çš„redisè¿æ¥å¯¹è±¡
         redis_conn = get_redis_connection("default")
 
-        # ä¯ÀÀÀúÊ·¼ÇÂ¼ÔÚredisÖĞÒÔÁĞ±í±£´æ
+        # æµè§ˆå†å²è®°å½•åœ¨redisä¸­ä»¥åˆ—è¡¨ä¿å­˜
         redis_key = "history_%s" % user.id
         sku_ids_list = redis_conn.lrange(redis_key, 0, 4)
         # sku_ids_list [7, 4, 8, 2 , 3]
 
-        # ¸ù¾İsku_id²éÑ¯ÉÌÆ·ĞÅÏ¢
+        # æ ¹æ®sku_idæŸ¥è¯¢å•†å“ä¿¡æ¯
         # select * from df_goods_sku where id in (1, 2,3,4)
         # sku_obj_list = GoodsSKU.objects.filter(id__in=sku_ids_list)  # [7, 4, 8, 2 , 3]
 
-        # ÎªÁË±£Ö¤´ÓÊı¾İ¿â²éÑ¯³öµÄË³ĞòÓëÓÃ»§µÄ·ÃÎÊË³ĞòÒ»ÖÂ
+        # ä¸ºäº†ä¿è¯ä»æ•°æ®åº“æŸ¥è¯¢å‡ºçš„é¡ºåºä¸ç”¨æˆ·çš„è®¿é—®é¡ºåºä¸€è‡´
         sku_obj_list = []
         for sku_id in sku_ids_list:
             sku = GoodsSKU.objects.get(id=sku_id)
@@ -349,7 +349,7 @@ class UserInfoView(LoginRequiredMixin, View):
             "address": address,
             "skus": sku_obj_list
         }
-        # ·µ»Ø
+        # è¿”å›
         return render(request, "user_center_info.html", context)
 	
 		
@@ -358,63 +358,63 @@ class UserInfoView(LoginRequiredMixin, View):
 
 
 		
-8.7ËÑË÷Ò³Ãæ
-²İİ®  GoodsSKU   df_sku
-select * from df_sku where name like ¡®%²İİ®%¡¯ or title like ¡®%²İİ®%¡¯ 
+8.7æœç´¢é¡µé¢
+è‰è“  GoodsSKU   df_sku
+select * from df_sku where name like â€˜%è‰è“%â€™ or title like â€˜%è‰è“%â€™ 
 
-²İİ®
+è‰è“
 
-²İİ® 500g    ÉîÛÚºĞ×°²İİ®ÎïÃÀ¼ÛÁ®    Ğ¡²İİ®
+è‰è“ 500g    æ·±åœ³ç›’è£…è‰è“ç‰©ç¾ä»·å»‰    å°è‰è“
 
 Dong  678
-È«ÎÄ¼ìË÷
+å…¨æ–‡æ£€ç´¢
 
-ËÑË÷ÒıÇæ  
-1.½¨Á¢Êı¾İµÄË÷Òı±í    ²İİ® sku= 1 2 3   »ùÎ§Ïº sku =100
-2.½øĞĞÖĞÎÄ·Ö´Ê²Ù×÷ *
+æœç´¢å¼•æ“  
+1.å»ºç«‹æ•°æ®çš„ç´¢å¼•è¡¨    è‰è“ sku= 1 2 3   åŸºå›´è™¾ sku =100
+2.è¿›è¡Œä¸­æ–‡åˆ†è¯æ“ä½œ *
 whoosh  
 
-ËÑË÷¿ò¼Ü
-haystack  ´î½¨ÁËÓÃ»§ºÍËÑË÷ÒıÇæÖ®¼äµÄ¹µÍ¨ÎÊÌâ
+æœç´¢æ¡†æ¶
+haystack  æ­å»ºäº†ç”¨æˆ·å’Œæœç´¢å¼•æ“ä¹‹é—´çš„æ²Ÿé€šé—®é¢˜
 
 
 
-ÅäÖÃ£º
-1)°²×°python°ü¡£
+é…ç½®ï¼š
+1)å®‰è£…pythonåŒ…ã€‚
 pip install django-haystack
 pip install whoosh
-2)ÔÚsettings.pyÎÄ¼şÖĞ×¢²áÓ¦ÓÃhaystack²¢×öÈçÏÂÅäÖÃ¡£
+2)åœ¨settings.pyæ–‡ä»¶ä¸­æ³¨å†Œåº”ç”¨haystackå¹¶åšå¦‚ä¸‹é…ç½®ã€‚
 
 
-3£©ÔÚgoodsÓ¦ÓÃÄ¿Â¼ÏÂĞÂ½¨Ò»¸ösearch_indexes.pyÎÄ¼ş£¬ÔÚÆäÖĞ¶¨ÒåÒ»¸öÉÌÆ·Ë÷ÒıÀàe¡£
+3ï¼‰åœ¨goodsåº”ç”¨ç›®å½•ä¸‹æ–°å»ºä¸€ä¸ªsearch_indexes.pyæ–‡ä»¶ï¼Œåœ¨å…¶ä¸­å®šä¹‰ä¸€ä¸ªå•†å“ç´¢å¼•ç±»eã€‚
 
-4£©ÔÚtemplatesÏÂÃæĞÂ½¨Ä¿Â¼search/indexes/goods¡£
+4ï¼‰åœ¨templatesä¸‹é¢æ–°å»ºç›®å½•search/indexes/goodsã€‚
 
-ÔÚ´ËÄ¿Â¼ÏÂÃæĞÂ½¨Ò»¸öÎÄ¼şgoodssku_text.txt²¢±à¼­ÄÚÈİÈçÏÂ£º
+åœ¨æ­¤ç›®å½•ä¸‹é¢æ–°å»ºä¸€ä¸ªæ–‡ä»¶goodssku_text.txtå¹¶ç¼–è¾‘å†…å®¹å¦‚ä¸‹ï¼š
 
-5£©Ê¹ÓÃÃüÁîÉú³ÉË÷ÒıÎÄ¼ş¡£
+5ï¼‰ä½¿ç”¨å‘½ä»¤ç”Ÿæˆç´¢å¼•æ–‡ä»¶ã€‚
 	python manage.py rebuild_index
 
-È«ÎÄ¼ìË÷µÄÊ¹ÓÃ£º
-1£©ÅäÖÃurl¡£
+å…¨æ–‡æ£€ç´¢çš„ä½¿ç”¨ï¼š
+1ï¼‰é…ç½®urlã€‚
 
-2£©±íµ¥ËÑË÷Ê±ÉèÖÃ±íµ¥ÄÚÈİÈçÏÂ¡£
+2ï¼‰è¡¨å•æœç´¢æ—¶è®¾ç½®è¡¨å•å†…å®¹å¦‚ä¸‹ã€‚
 
-µã»÷±êÌâ½øĞĞÌá½»Ê±£¬»áÍ¨¹ıhaystackËÑË÷Êı¾İ¡£
-È«ÎÄ¼ìË÷½á¹û£º
-ËÑË÷³ö½á¹ûºó£¬haystack»á°ÑËÑË÷³öµÄ½á¹û´«µİ¸øtemplates/searchÄ¿Â¼ÏÂµÄsearch.html£¬´«µİµÄÉÏÏÂÎÄ°üÀ¨£º
-?query£ºËÑË÷¹Ø¼ü×Ö
-?page£ºµ±Ç°Ò³µÄpage¶ÔÏó
-?paginator£º·ÖÒ³paginator¶ÔÏó
-Í¨¹ıHAYSTACK_SEARCH_RESULTS_PER_PAGE ¿ÉÒÔ¿ØÖÆÃ¿Ò³ÏÔÊ¾ÊıÁ¿
+ç‚¹å‡»æ ‡é¢˜è¿›è¡Œæäº¤æ—¶ï¼Œä¼šé€šè¿‡haystackæœç´¢æ•°æ®ã€‚
+å…¨æ–‡æ£€ç´¢ç»“æœï¼š
+æœç´¢å‡ºç»“æœåï¼Œhaystackä¼šæŠŠæœç´¢å‡ºçš„ç»“æœä¼ é€’ç»™templates/searchç›®å½•ä¸‹çš„search.htmlï¼Œä¼ é€’çš„ä¸Šä¸‹æ–‡åŒ…æ‹¬ï¼š
+?queryï¼šæœç´¢å…³é”®å­—
+?pageï¼šå½“å‰é¡µçš„pageå¯¹è±¡
+?paginatorï¼šåˆ†é¡µpaginatorå¯¹è±¡
+é€šè¿‡HAYSTACK_SEARCH_RESULTS_PER_PAGE å¯ä»¥æ§åˆ¶æ¯é¡µæ˜¾ç¤ºæ•°é‡
 
 
-¸Ä±ä·Ö´Ê·½Ê½£º
-1.°²×°jieba·Ö´ÊÄ£¿é¡£
+æ”¹å˜åˆ†è¯æ–¹å¼ï¼š
+1.å®‰è£…jiebaåˆ†è¯æ¨¡å—ã€‚
 pip install jieba
-2.ÕÒµ½ĞéÄâ»·¾³py_djangoÏÂµÄhaystackÄ¿Â¼¡£
+2.æ‰¾åˆ°è™šæ‹Ÿç¯å¢ƒpy_djangoä¸‹çš„haystackç›®å½•ã€‚
 /home/python/.virtualenvs/bj10_py3/lib/python3.5/site-packages/haystack/backends/
-3.ÔÚÉÏÃæµÄÄ¿Â¼ÖĞ´´½¨ChineseAnalyzer.pyÎÄ¼ş¡£
+3.åœ¨ä¸Šé¢çš„ç›®å½•ä¸­åˆ›å»ºChineseAnalyzer.pyæ–‡ä»¶ã€‚
 import jieba
 from whoosh.analysis import Tokenizer, Token
 
@@ -436,18 +436,18 @@ class ChineseTokenizer(Tokenizer):
 
 def ChineseAnalyzer():
     return ChineseTokenizer()
-4.¸´ÖÆwhoosh_backend.pyÎÄ¼ş£¬¸ÄÎªÈçÏÂÃû³Æ£º
+4.å¤åˆ¶whoosh_backend.pyæ–‡ä»¶ï¼Œæ”¹ä¸ºå¦‚ä¸‹åç§°ï¼š
 	whoosh_cn_backend.py
-5.´ò¿ª¸´ÖÆ³öÀ´µÄĞÂÎÄ¼ş£¬ÒıÈëÖĞÎÄ·ÖÎöÀà£¬ÄÚ²¿²ÉÓÃjieba·Ö´Ê¡£
+5.æ‰“å¼€å¤åˆ¶å‡ºæ¥çš„æ–°æ–‡ä»¶ï¼Œå¼•å…¥ä¸­æ–‡åˆ†æç±»ï¼Œå†…éƒ¨é‡‡ç”¨jiebaåˆ†è¯ã€‚
 from .ChineseAnalyzer import ChineseAnalyzer
-6.¸ü¸Ä´ÊÓï·ÖÎöÀà¡£
-²éÕÒ
+6.æ›´æ”¹è¯è¯­åˆ†æç±»ã€‚
+æŸ¥æ‰¾
 analyzer=StemmingAnalyzer()
-¸ÄÎª
+æ”¹ä¸º
 analyzer=ChineseAnalyzer()
 7.
 8.
-9.ÖØĞÂ´´½¨Ë÷ÒıÊı¾İ
+9.é‡æ–°åˆ›å»ºç´¢å¼•æ•°æ®
 python manage.py rebuild_index	
 		
 		

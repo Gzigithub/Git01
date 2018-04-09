@@ -1,232 +1,232 @@
 # coding=utf-8
 
-# µ¼ÈëÀ¶Í¼¶ÔÏóapi
+# å¯¼å…¥è“å›¾å¯¹è±¡api
 from . import api
-# µ¼ÈëcaptchaÀ©Õ¹°ü
+# å¯¼å…¥captchaæ‰©å±•åŒ…
 from ihome.utils.captcha.captcha import captcha
-# µ¼ÈëredisÊı¾İ¿âÊµÀı
+# å¯¼å…¥redisæ•°æ®åº“å®ä¾‹
 from ihome import redis_store,constants,db
-# µ¼ÈëflaskÄÚÖÃµÄ¶ÔÏócurrent_app
+# å¯¼å…¥flaskå†…ç½®çš„å¯¹è±¡current_app
 from flask import current_app,jsonify,make_response,request,session
-# µ¼Èë×Ô¶¨ÒåµÄ×´Ì¬Âë
+# å¯¼å…¥è‡ªå®šä¹‰çš„çŠ¶æ€ç 
 from ihome.utils.response_code import RET
-# µ¼ÈëÄ£ĞÍÀàUser
+# å¯¼å…¥æ¨¡å‹ç±»User
 from ihome.models import User
-# µ¼ÈëÔÆÍ¨Ñ¶À©Õ¹
+# å¯¼å…¥äº‘é€šè®¯æ‰©å±•
 from ihome.utils import sms
 
-# µ¼ÈëÕıÔòÄ£¿é,Ğ£ÑéÊÖ»úºÅ
+# å¯¼å…¥æ­£åˆ™æ¨¡å—,æ ¡éªŒæ‰‹æœºå·
 import re
-# µ¼ÈërandomÄ£¿é,ÓÃÀ´Éú³É¶ÌĞÅÂë
+# å¯¼å…¥randomæ¨¡å—,ç”¨æ¥ç”ŸæˆçŸ­ä¿¡ç 
 import random
 
 
 @api.route('/imagecode/<image_code_id>',methods=['GET'])
 def generate_image_code(image_code_id):
     """
-    Éú³ÉÍ¼Æ¬ÑéÖ¤Âë
-    1/µ¼ÈëÊ¹ÓÃcaptchaÀ©Õ¹°ü,Éú³ÉÍ¼Æ¬ÑéÖ¤Âë,name/text/image
-    2/ÔÚ·şÎñÆ÷±£´æÍ¼Æ¬ÑéÖ¤Âë,±£´æµ½redisÖĞ,
-    3/Èç¹û±£´æÊ§°Ü,·µ»Ø´íÎóĞÅÏ¢,¼ÇÂ¼ÈÕÖ¾current_app
-    4/·µ»ØÍ¼Æ¬,Ê¹ÓÃmake_response¶ÔÏó
+    ç”Ÿæˆå›¾ç‰‡éªŒè¯ç 
+    1/å¯¼å…¥ä½¿ç”¨captchaæ‰©å±•åŒ…,ç”Ÿæˆå›¾ç‰‡éªŒè¯ç ,name/text/image
+    2/åœ¨æœåŠ¡å™¨ä¿å­˜å›¾ç‰‡éªŒè¯ç ,ä¿å­˜åˆ°redisä¸­,
+    3/å¦‚æœä¿å­˜å¤±è´¥,è¿”å›é”™è¯¯ä¿¡æ¯,è®°å½•æ—¥å¿—current_app
+    4/è¿”å›å›¾ç‰‡,ä½¿ç”¨make_responseå¯¹è±¡
     :param image_code_id:
     :return:
     """
-    # Éú³ÉÍ¼Æ¬ÑéÖ¤Âë
+    # ç”Ÿæˆå›¾ç‰‡éªŒè¯ç 
     name,text,image = captcha.generate_captcha()
-    # ±£´æÍ¼Æ¬ÑéÖ¤Âëµ½redisÖĞ
+    # ä¿å­˜å›¾ç‰‡éªŒè¯ç åˆ°redisä¸­
     try:
         redis_store.setex('ImageCode_' + image_code_id,constants.IMAGE_CODE_REDIS_EXPIRES,text)
     except Exception as e:
-        # ¼ÇÂ¼´íÎóÈÕÖ¾ĞÅÏ¢
+        # è®°å½•é”™è¯¯æ—¥å¿—ä¿¡æ¯
         current_app.logger.error(e)
-        # ·µ»Ø´íÎóĞÅÏ¢
-        return jsonify(errno=RET.DBERR,errmsg='±£´æÍ¼Æ¬ÑéÖ¤ÂëÊ§°Ü')
-    # Èç¹ûÎ´·¢ÉúÒì³£,Ö´ĞĞelse
+        # è¿”å›é”™è¯¯ä¿¡æ¯
+        return jsonify(errno=RET.DBERR,errmsg='ä¿å­˜å›¾ç‰‡éªŒè¯ç å¤±è´¥')
+    # å¦‚æœæœªå‘ç”Ÿå¼‚å¸¸,æ‰§è¡Œelse
     else:
-        # Ê¹ÓÃÏìÓ¦¶ÔÏó·µ»ØÍ¼Æ¬
+        # ä½¿ç”¨å“åº”å¯¹è±¡è¿”å›å›¾ç‰‡
         response = make_response(image)
-        # ÉèÖÃÏìÓ¦µÄÊı¾İÀàĞÍ
+        # è®¾ç½®å“åº”çš„æ•°æ®ç±»å‹
         response.headers['Content-Type'] = 'image/jpg'
-        # ·µ»Ø½á¹û
+        # è¿”å›ç»“æœ
         return response
 
 
 @api.route('/smscode/<mobile>',methods=['GET'])
 def send_sms_code(mobile):
     """
-    ·¢ËÍ¶ÌĞÅ:»ñÈ¡²ÎÊı---¼ì²é²ÎÊı---ÒµÎñ´¦Àí(²éÑ¯Êı¾İ)---·µ»Ø½á¹û
-    1/»ñÈ¡²ÎÊı,mobile,text(Í¼Æ¬ÑéÖ¤Âë),id(Í¼Æ¬ÑéÖ¤Âë±àºÅ)
-    2/Ğ£Ñé²ÎÊıµÄÍêÕûĞÔ
-    3/Ğ£ÑéÊÖ»úºÅ,ÕıÔòĞ£ÑéÊÖ»úºÅ
-    4/»ñÈ¡±¾µØ´æ´¢µÄÕæÊµÍ¼Æ¬ÑéÖ¤Âë
-    5/ÅĞ¶Ï»ñÈ¡½á¹ûÊÇ·ñ´æÔÚ
-    6/É¾³ıÒÑ¾­¶ÁÈ¡¹ıµÄÍ¼Æ¬ÑéÖ¤Âë,Í¼Æ¬ÑéÖ¤ÂëÖ»ÄÜ»ñÈ¡Ò»´Î
-    7/±È½ÏÍ¼Æ¬ÑéÖ¤ÂëÊÇ·ñÒ»ÖÂ
-    8/·¢ËÍ¶ÌĞÅ,ÔÆÍ¨Ñ¶Ö»ÄÜÌá¹©ÍøÂç·şÎñ,¶ÌĞÅÄÚÈİĞèÒª×Ô¶¨Òå,Ëæ»úÊı
-    9/Éú³ÉÒ»¸ö¶ÌĞÅÑéÖ¤Âë,ÁùÎ»ÊıµÄËæ»úÊı,random.randint()
-    10/´æ´¢¶ÌĞÅÑéÖ¤Âëµ½redisÊı¾İ¿âÖĞ
-    11/×¼±¸·¢ËÍ¶ÌĞÅ,ÅĞ¶ÏÓÃ»§ÊÇ·ñÒÑ×¢²á,È»ºóµ÷ÓÃsms.CCP()
-    12/±£´æ·¢ËÍ½á¹û,ÅĞ¶Ï·¢ËÍÊÇ·ñ³É¹¦
-    13/·µ»Ø½á¹û
+    å‘é€çŸ­ä¿¡:è·å–å‚æ•°---æ£€æŸ¥å‚æ•°---ä¸šåŠ¡å¤„ç†(æŸ¥è¯¢æ•°æ®)---è¿”å›ç»“æœ
+    1/è·å–å‚æ•°,mobile,text(å›¾ç‰‡éªŒè¯ç ),id(å›¾ç‰‡éªŒè¯ç ç¼–å·)
+    2/æ ¡éªŒå‚æ•°çš„å®Œæ•´æ€§
+    3/æ ¡éªŒæ‰‹æœºå·,æ­£åˆ™æ ¡éªŒæ‰‹æœºå·
+    4/è·å–æœ¬åœ°å­˜å‚¨çš„çœŸå®å›¾ç‰‡éªŒè¯ç 
+    5/åˆ¤æ–­è·å–ç»“æœæ˜¯å¦å­˜åœ¨
+    6/åˆ é™¤å·²ç»è¯»å–è¿‡çš„å›¾ç‰‡éªŒè¯ç ,å›¾ç‰‡éªŒè¯ç åªèƒ½è·å–ä¸€æ¬¡
+    7/æ¯”è¾ƒå›¾ç‰‡éªŒè¯ç æ˜¯å¦ä¸€è‡´
+    8/å‘é€çŸ­ä¿¡,äº‘é€šè®¯åªèƒ½æä¾›ç½‘ç»œæœåŠ¡,çŸ­ä¿¡å†…å®¹éœ€è¦è‡ªå®šä¹‰,éšæœºæ•°
+    9/ç”Ÿæˆä¸€ä¸ªçŸ­ä¿¡éªŒè¯ç ,å…­ä½æ•°çš„éšæœºæ•°,random.randint()
+    10/å­˜å‚¨çŸ­ä¿¡éªŒè¯ç åˆ°redisæ•°æ®åº“ä¸­
+    11/å‡†å¤‡å‘é€çŸ­ä¿¡,åˆ¤æ–­ç”¨æˆ·æ˜¯å¦å·²æ³¨å†Œ,ç„¶åè°ƒç”¨sms.CCP()
+    12/ä¿å­˜å‘é€ç»“æœ,åˆ¤æ–­å‘é€æ˜¯å¦æˆåŠŸ
+    13/è¿”å›ç»“æœ
     :param mobile:
     :return:
     """
-    # »ñÈ¡²ÎÊı,getÇëÇó,textÎªÓÃ»§ÊäÈëµÄÍ¼Æ¬ÑéÖ¤ÂëÄÚÈİ,idÎªÍ¼Æ¬ÑéÖ¤Âë±àºÅ
+    # è·å–å‚æ•°,getè¯·æ±‚,textä¸ºç”¨æˆ·è¾“å…¥çš„å›¾ç‰‡éªŒè¯ç å†…å®¹,idä¸ºå›¾ç‰‡éªŒè¯ç ç¼–å·
     image_code = request.args.get('text')
     image_code_id = request.args.get('id')
-    # Ğ£Ñé²ÎÊıµÄÍêÕûĞÔ,anyÅĞ¶ÏÒ»¸ö
+    # æ ¡éªŒå‚æ•°çš„å®Œæ•´æ€§,anyåˆ¤æ–­ä¸€ä¸ª
     if not all([mobile,image_code,image_code_id]):
-        return jsonify(errno=RET.PARAMERR,errmsg='²ÎÊı²»ÍêÕû')
-    # ²ÎÊı¼ì²é,Ê×ÏÈ¼ì²éÊÖ»úºÅ
-    # a = compile()°Ñ¾ßÌåµÄÊı¾İ±àÒë³ÉÒ»¸ö¶ÔÏó,match()´ÓÇ°Íùºó,search()ËÑË÷,findall()²éÑ¯ËùÓĞ,sub()²éÑ¯Ìæ»»
+        return jsonify(errno=RET.PARAMERR,errmsg='å‚æ•°ä¸å®Œæ•´')
+    # å‚æ•°æ£€æŸ¥,é¦–å…ˆæ£€æŸ¥æ‰‹æœºå·
+    # a = compile()æŠŠå…·ä½“çš„æ•°æ®ç¼–è¯‘æˆä¸€ä¸ªå¯¹è±¡,match()ä»å‰å¾€å,search()æœç´¢,findall()æŸ¥è¯¢æ‰€æœ‰,sub()æŸ¥è¯¢æ›¿æ¢
     # \d,\D,\w(a-zA-Z0-9_)\W,.+*?
     if not re.match(r'1[3456789]\d{9}',mobile):
-        return jsonify(errno=RET.PARAMERR,errmsg='ÊÖ»úºÅ¸ñÊ½´íÎó')
-    # »ñÈ¡ÕæÊµµÄÍ¼Æ¬ÑéÖ¤Âë
+        return jsonify(errno=RET.PARAMERR,errmsg='æ‰‹æœºå·æ ¼å¼é”™è¯¯')
+    # è·å–çœŸå®çš„å›¾ç‰‡éªŒè¯ç 
     try:
         real_image_code = redis_store.get('ImageCode_' + image_code_id)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='»ñÈ¡Í¼Æ¬ÑéÖ¤ÂëÊ§°Ü')
-    # ÅĞ¶Ï»ñÈ¡½á¹û
+        return jsonify(errno=RET.DBERR,errmsg='è·å–å›¾ç‰‡éªŒè¯ç å¤±è´¥')
+    # åˆ¤æ–­è·å–ç»“æœ
     if not real_image_code:
-        return jsonify(errno=RET.NODATA,errmsg='Í¼Æ¬ÑéÖ¤ÂëÒÑ¹ıÆÚ')
-    # É¾³ıÍ¼Æ¬ÑéÖ¤Âë,ÒòÎªÖ»ÄÜ¶ÁÈ¡Ò»´Î
+        return jsonify(errno=RET.NODATA,errmsg='å›¾ç‰‡éªŒè¯ç å·²è¿‡æœŸ')
+    # åˆ é™¤å›¾ç‰‡éªŒè¯ç ,å› ä¸ºåªèƒ½è¯»å–ä¸€æ¬¡
     try:
         redis_store.delete('ImageCode_' + image_code_id)
     except Exception as e:
         current_app.logger.error(e)
-    # ±È½ÏÍ¼Æ¬ÑéÖ¤ÂëÊÇ·ñÒ»ÖÂ,ĞèÒªºöÂÔ´óĞ¡Ğ´
+    # æ¯”è¾ƒå›¾ç‰‡éªŒè¯ç æ˜¯å¦ä¸€è‡´,éœ€è¦å¿½ç•¥å¤§å°å†™
     if real_image_code.lower() != image_code.lower():
-        return jsonify(errno=RET.DATAERR,errmsg='Í¼Æ¬ÑéÖ¤Âë²»Ò»ÖÂ')
-    # ÅĞ¶ÏÊÖ»úºÅÊÇ·ñÒÑ×¢²á
+        return jsonify(errno=RET.DATAERR,errmsg='å›¾ç‰‡éªŒè¯ç ä¸ä¸€è‡´')
+    # åˆ¤æ–­æ‰‹æœºå·æ˜¯å¦å·²æ³¨å†Œ
     try:
         user = User.query.filter_by(mobile=mobile).first()
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='²éÑ¯Êı¾İ¿âÒì³£')
+        return jsonify(errno=RET.DBERR,errmsg='æŸ¥è¯¢æ•°æ®åº“å¼‚å¸¸')
     else:
-        # ÅĞ¶Ï²éÑ¯½á¹û,ÓÃ»§ÊÇ·ñ´æÔÚ
+        # åˆ¤æ–­æŸ¥è¯¢ç»“æœ,ç”¨æˆ·æ˜¯å¦å­˜åœ¨
         if user is not None:
-            return jsonify(errno=RET.DATAEXIST,errmsg='ÊÖ»úºÅÒÑ×¢²á')
-    # Éú³É¶ÌĞÅËæ»úÊı,ÁùÎ»Êı
+            return jsonify(errno=RET.DATAEXIST,errmsg='æ‰‹æœºå·å·²æ³¨å†Œ')
+    # ç”ŸæˆçŸ­ä¿¡éšæœºæ•°,å…­ä½æ•°
     sms_code = '%06d' % random.randint(1,999999)
-    # ±£´æ¶ÌĞÅÑéÖ¤Âë,µ½redisÖĞ
+    # ä¿å­˜çŸ­ä¿¡éªŒè¯ç ,åˆ°redisä¸­
     try:
         redis_store.setex('SMSCode_' + mobile,constants.SMS_CODE_REDIS_EXPIRES,sms_code)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='±£´æÊı¾İÒì³£')
-    # µ÷ÓÃÔÆÍ¨Ñ¶À©Õ¹,×¼±¸·¢ËÍ¶ÌĞÅ,µ÷ÓÃµÚÈı·½À©Õ¹Ò»°ã¶¼ĞèÒªÒì³£´¦Àí
+        return jsonify(errno=RET.DBERR,errmsg='ä¿å­˜æ•°æ®å¼‚å¸¸')
+    # è°ƒç”¨äº‘é€šè®¯æ‰©å±•,å‡†å¤‡å‘é€çŸ­ä¿¡,è°ƒç”¨ç¬¬ä¸‰æ–¹æ‰©å±•ä¸€èˆ¬éƒ½éœ€è¦å¼‚å¸¸å¤„ç†
     try:
         send_sms = sms.CCP()
         result = send_sms.send_template_sms(mobile,[sms_code,constants.SMS_CODE_REDIS_EXPIRES/60],1)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.THIRDERR,errmsg='·¢ËÍ¶ÌĞÅÒì³£')
-    # ÅĞ¶Ï·µ»Ø½á¹û,±í´ïÊ½ÖĞ±äÁ¿ºÍÊı¾İ±È½Ï,½¨Òé±äÁ¿Ğ´ºóÃæ;
+        return jsonify(errno=RET.THIRDERR,errmsg='å‘é€çŸ­ä¿¡å¼‚å¸¸')
+    # åˆ¤æ–­è¿”å›ç»“æœ,è¡¨è¾¾å¼ä¸­å˜é‡å’Œæ•°æ®æ¯”è¾ƒ,å»ºè®®å˜é‡å†™åé¢;
     if 0 == result:
     # if result == 0:
-        return jsonify(errno=RET.OK,errmsg='·¢ËÍ³É¹¦')
+        return jsonify(errno=RET.OK,errmsg='å‘é€æˆåŠŸ')
     else:
-        return jsonify(errno=RET.THIRDERR,errmsg='·¢ËÍÊ§°Ü')
+        return jsonify(errno=RET.THIRDERR,errmsg='å‘é€å¤±è´¥')
 
 
 @api.route('/users',methods=['POST'])
 def register():
     """
-    ×¢²á:
-    1/»ñÈ¡²ÎÊı,request¶ÔÏóµÄget_json()»ñÈ¡Ç°¶Ë·¢ËÍ¹ıÀ´postÇëÇóµÄdataÊı¾İ
-    2/½øÒ»²½»ñÈ¡dataÊı¾İÀïµÄÏêÏ¸µÄ²ÎÊı,mobile,sms_code,password
-    3/²ÎÊıµÄÍêÕûĞÔĞ£Ñé
-    4/ÊÖ»úºÅ¸ñÊ½¼ì²é,ÊÖ»úºÅ´æÔÚ¼ì²é
-    5/»ñÈ¡±¾µØ´æ´¢µÄÕæÊµ¶ÌĞÅÑéÖ¤Âë
-    6/Ğ£Ñé»ñÈ¡½á¹û
-    7/ÏÈ±È½Ï¶ÌĞÅÑéÖ¤Âë,Èç¹ûÕıÈ·µÄÇé¿öÏÂ,É¾³ı¶ÌĞÅÑéÖ¤Âë
-    8/¹¹ÔìÄ£ĞÍÀà¶ÔÏó,×¼±¸´æ´¢ÓÃ»§ĞÅÏ¢
+    æ³¨å†Œ:
+    1/è·å–å‚æ•°,requestå¯¹è±¡çš„get_json()è·å–å‰ç«¯å‘é€è¿‡æ¥postè¯·æ±‚çš„dataæ•°æ®
+    2/è¿›ä¸€æ­¥è·å–dataæ•°æ®é‡Œçš„è¯¦ç»†çš„å‚æ•°,mobile,sms_code,password
+    3/å‚æ•°çš„å®Œæ•´æ€§æ ¡éªŒ
+    4/æ‰‹æœºå·æ ¼å¼æ£€æŸ¥,æ‰‹æœºå·å­˜åœ¨æ£€æŸ¥
+    5/è·å–æœ¬åœ°å­˜å‚¨çš„çœŸå®çŸ­ä¿¡éªŒè¯ç 
+    6/æ ¡éªŒè·å–ç»“æœ
+    7/å…ˆæ¯”è¾ƒçŸ­ä¿¡éªŒè¯ç ,å¦‚æœæ­£ç¡®çš„æƒ…å†µä¸‹,åˆ é™¤çŸ­ä¿¡éªŒè¯ç 
+    8/æ„é€ æ¨¡å‹ç±»å¯¹è±¡,å‡†å¤‡å­˜å‚¨ç”¨æˆ·ä¿¡æ¯
     user = User(name=mobile,mobile=mobile)
     user.password = password
-    9/Ìá½»Êı¾İµ½Êı¾İ¿â
+    9/æäº¤æ•°æ®åˆ°æ•°æ®åº“
     db.session.add(user)
     db.session.commit()
     db.session.rollback()
-    10/»º´æÓÃ»§µÄsessionĞÅÏ¢
+    10/ç¼“å­˜ç”¨æˆ·çš„sessionä¿¡æ¯
     session['name'] = mobile
     session['name'] = user.name
     session['user_id'] = user.id
     session['mobile'] = mobile
-    11/·µ»Ø½á¹û
+    11/è¿”å›ç»“æœ
     return jsonify(errno=RET.OK,errmsg='OK',data=user.to_dict())
     :return:
     """
-    # »ñÈ¡²ÎÊı,postÇëÇóµÄ²ÎÊıÊ¹ÓÃget_json()·½·¨
+    # è·å–å‚æ•°,postè¯·æ±‚çš„å‚æ•°ä½¿ç”¨get_json()æ–¹æ³•
     """
     req = {'mobile':mobile,'sms_code':sms_code,'password':password}
     JSON.stringify(req)
     JSON.parse(resp)
-    DataType:json;Ö¸Ã÷ÁË½ÓÊÕºó¶Ë·µ»ØµÄÊı¾İ¸ñÊ½;
+    DataType:json;æŒ‡æ˜äº†æ¥æ”¶åç«¯è¿”å›çš„æ•°æ®æ ¼å¼;
 
     """
 
     user_data = request.get_json()
-    # Ğ£Ñé²ÎÊıµÄ´æÔÚ
+    # æ ¡éªŒå‚æ•°çš„å­˜åœ¨
     if not user_data:
-        return jsonify(errno=RET.PARAMERR,errmsg='²ÎÊı´íÎó')
-    # »ñÈ¡ÏêÏ¸µÄ²ÎÊıĞÅÏ¢,user_data['mobile']
+        return jsonify(errno=RET.PARAMERR,errmsg='å‚æ•°é”™è¯¯')
+    # è·å–è¯¦ç»†çš„å‚æ•°ä¿¡æ¯,user_data['mobile']
     mobile = user_data.get('mobile')
     sms_code = user_data.get('sms_code')
     password = user_data.get('password')
-    # ²ÎÊıÍêÕûĞÔ¼ì²é
+    # å‚æ•°å®Œæ•´æ€§æ£€æŸ¥
     if not all([mobile,sms_code,password]):
-        return jsonify(errno=RET.PARAMERR,errmsg='²ÎÊıÈ±Ê§')
-    # ¼ì²éÊÖ»úºÅ¸ñÊ½
+        return jsonify(errno=RET.PARAMERR,errmsg='å‚æ•°ç¼ºå¤±')
+    # æ£€æŸ¥æ‰‹æœºå·æ ¼å¼
     if not re.match(r'^1[3456789]\d{9}$',mobile):
-        return jsonify(errno=RET.PARAMERR,errmsg='ÊÖ»úºÅ¸ñÊ½´íÎó')
-    # ¼ì²éÊÖ»úºÅÊÇ·ñÒÑ×¢²á
+        return jsonify(errno=RET.PARAMERR,errmsg='æ‰‹æœºå·æ ¼å¼é”™è¯¯')
+    # æ£€æŸ¥æ‰‹æœºå·æ˜¯å¦å·²æ³¨å†Œ
     try:
         user = User.query.filter_by(mobile=mobile).first()
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='²éÑ¯ÊÖ»úºÅÒì³£')
+        return jsonify(errno=RET.DBERR,errmsg='æŸ¥è¯¢æ‰‹æœºå·å¼‚å¸¸')
     else:
         if user:
-            return jsonify(errno=RET.DATAEXIST,errmsg='ÊÖ»úºÅÒÑ×¢²á')
-    # »ñÈ¡ÕæÊµµÄ¶ÌĞÅÑéÖ¤Âë
+            return jsonify(errno=RET.DATAEXIST,errmsg='æ‰‹æœºå·å·²æ³¨å†Œ')
+    # è·å–çœŸå®çš„çŸ­ä¿¡éªŒè¯ç 
     try:
         real_sms_code = redis_store.get('SMSCode_' + mobile)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='»ñÈ¡±¾µØ¶ÌĞÅÑéÖ¤ÂëÊ§°Ü')
-    # ÅĞ¶Ï»ñÈ¡½á¹û
+        return jsonify(errno=RET.DBERR,errmsg='è·å–æœ¬åœ°çŸ­ä¿¡éªŒè¯ç å¤±è´¥')
+    # åˆ¤æ–­è·å–ç»“æœ
     if not real_sms_code:
-        return jsonify(errno=RET.NODATA,errmsg='¶ÌĞÅÑéÖ¤ÂëÒÑ¹ıÆÚ')
-    # ÅĞ¶Ï¶ÌĞÅÑéÖ¤ÂëÊÇ·ñÒ»ÖÂ
+        return jsonify(errno=RET.NODATA,errmsg='çŸ­ä¿¡éªŒè¯ç å·²è¿‡æœŸ')
+    # åˆ¤æ–­çŸ­ä¿¡éªŒè¯ç æ˜¯å¦ä¸€è‡´
     if real_sms_code != str(sms_code):
-        return jsonify(errno=RET.DATAERR,errmsg='¶ÌĞÅÑéÖ¤Âë²»Ò»ÖÂ')
-    # Èç¹û¶ÌĞÅÑéÖ¤ÂëÒ»ÖÂ,É¾³ıredisÖĞµÄ¶ÌĞÅÑéÖ¤Âë
+        return jsonify(errno=RET.DATAERR,errmsg='çŸ­ä¿¡éªŒè¯ç ä¸ä¸€è‡´')
+    # å¦‚æœçŸ­ä¿¡éªŒè¯ç ä¸€è‡´,åˆ é™¤redisä¸­çš„çŸ­ä¿¡éªŒè¯ç 
     try:
         redis_store.delete('SMSCode_' + mobile)
     except Exception as e:
         current_app.logger.error(e)
-    # ×¼±¸´æ´¢Êı¾İ,Ê¹ÓÃÄ£ĞÍÀà
+    # å‡†å¤‡å­˜å‚¨æ•°æ®,ä½¿ç”¨æ¨¡å‹ç±»
     user = User(name=mobile,mobile=mobile)
-    # µ÷ÓÃÁËÄ£ĞÍÀàÖĞµÄpassword·½·¨,ÊµÏÖÁËÃÜÂëµÄ¼ÓÃÜ
+    # è°ƒç”¨äº†æ¨¡å‹ç±»ä¸­çš„passwordæ–¹æ³•,å®ç°äº†å¯†ç çš„åŠ å¯†
     user.password = password
-    # Ìá½»Êı¾İµ½Êı¾İ¿âÖĞ
+    # æäº¤æ•°æ®åˆ°æ•°æ®åº“ä¸­
     try:
         db.session.add(user)
         db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
-        # ´æ´¢Êı¾İÈç¹û·¢ÉúÒì³£,ĞèÒª½øĞĞ»Ø¹ö
+        # å­˜å‚¨æ•°æ®å¦‚æœå‘ç”Ÿå¼‚å¸¸,éœ€è¦è¿›è¡Œå›æ»š
         db.session.rollback()
-        return jsonify(errno=RET.DBERR,errmsg='±£´æÓÃ»§ĞÅÏ¢Òì³£')
-    # »º´æÓÃ»§ĞÅÏ¢,Ê¹ÓÃsession
+        return jsonify(errno=RET.DBERR,errmsg='ä¿å­˜ç”¨æˆ·ä¿¡æ¯å¼‚å¸¸')
+    # ç¼“å­˜ç”¨æˆ·ä¿¡æ¯,ä½¿ç”¨session
     session['user_id'] = user.id
     session['name'] = mobile
     session['mobile'] = mobile
-    # ·µ»Ø½á¹û,dataÊı¾İÎª¸½ÊôĞÅÏ¢
+    # è¿”å›ç»“æœ,dataæ•°æ®ä¸ºé™„å±ä¿¡æ¯
     return jsonify(errno=RET.OK,errmsg='OK',data=user.to_dict())
 
 	
@@ -234,72 +234,72 @@ def register():
 
 # coding=utf-8
 
-# µ¼ÈëÀ¶Í¼¶ÔÏóapi
+# å¯¼å…¥è“å›¾å¯¹è±¡api
 from . import api
-# µ¼ÈëflaskÄÚÖÃµÄ¶ÔÏó
+# å¯¼å…¥flaskå†…ç½®çš„å¯¹è±¡
 from flask import request,jsonify,current_app,session,g
-# µ¼Èë×Ô¶¨ÒåµÄ×´Ì¬Âë
+# å¯¼å…¥è‡ªå®šä¹‰çš„çŠ¶æ€ç 
 from ihome.utils.response_code import RET
-# µ¼ÈëÄ£ĞÍÀàUser
+# å¯¼å…¥æ¨¡å‹ç±»User
 from ihome.models import User
-# µ¼ÈëµÇÂ½ÑéÖ¤×°ÊÎÆ÷
+# å¯¼å…¥ç™»é™†éªŒè¯è£…é¥°å™¨
 from ihome.utils.commons import login_required
-# µ¼ÈëÆßÅ£ÔÆ½Ó¿Ú
+# å¯¼å…¥ä¸ƒç‰›äº‘æ¥å£
 from ihome.utils.image_storage import storage
-# µ¼ÈëÊı¾İ¿âÊµÀı
+# å¯¼å…¥æ•°æ®åº“å®ä¾‹
 from ihome import db,constants
 
-# µ¼ÈëÕıÔòÄ£¿é,Ğ£ÑéÊÖ»úºÅ
+# å¯¼å…¥æ­£åˆ™æ¨¡å—,æ ¡éªŒæ‰‹æœºå·
 import re
 
 
 @api.route('/sessions',methods=['POST'])
 def login():
     """
-    ÓÃ»§µÇÂ½
-    1/»ñÈ¡²ÎÊı,postÇëÇó,get_json()
-    2/¼ì²é²ÎÊı´æÔÚ,Èç¹û²ÎÊı´æÔÚ½øÒ»²½»ñÈ¡ÏêÏ¸µÄ²ÎÊıĞÅÏ¢
+    ç”¨æˆ·ç™»é™†
+    1/è·å–å‚æ•°,postè¯·æ±‚,get_json()
+    2/æ£€æŸ¥å‚æ•°å­˜åœ¨,å¦‚æœå‚æ•°å­˜åœ¨è¿›ä¸€æ­¥è·å–è¯¦ç»†çš„å‚æ•°ä¿¡æ¯
     mobile,password
-    3/Ğ£Ñé²ÎÊıµÄÍêÕûĞÔ
-    4/Ğ£ÑéÊÖ»úºÅ¸ñÊ½,ÕıÔò
-    5/ÊÖ»úºÅÊÇ·ñÒÑ×¢²á,²éÑ¯mysqlÊı¾İ¿â
+    3/æ ¡éªŒå‚æ•°çš„å®Œæ•´æ€§
+    4/æ ¡éªŒæ‰‹æœºå·æ ¼å¼,æ­£åˆ™
+    5/æ‰‹æœºå·æ˜¯å¦å·²æ³¨å†Œ,æŸ¥è¯¢mysqlæ•°æ®åº“
     user = User.query.filter_by(mobile=mobilbe).first()
-    6/Ğ£Ñé²éÑ¯½á¹û,Ğ£ÑéÃÜÂë
+    6/æ ¡éªŒæŸ¥è¯¢ç»“æœ,æ ¡éªŒå¯†ç 
     if user is not None or user.check_password(password)
-    7/»º´æÓÃ»§ĞÅÏ¢,Ê¹ÓÃsession¶ÔÏó
+    7/ç¼“å­˜ç”¨æˆ·ä¿¡æ¯,ä½¿ç”¨sessionå¯¹è±¡
     session['name'] = user.name
     session['mobile'] = mobile
-    8/·µ»Ø½á¹û
+    8/è¿”å›ç»“æœ
     :return:
     """
-    # »ñÈ¡²ÎÊı
+    # è·å–å‚æ•°
     user_data = request.get_json()
-    # ¼ì²é²ÎÊı´æÔÚ
+    # æ£€æŸ¥å‚æ•°å­˜åœ¨
     if not user_data:
-        return jsonify(errno=RET.PARAMERR,errmsg='²ÎÊı´íÎó')
-    # »ñÈ¡ÏêÏ¸µÄ²ÎÊıĞÅÏ¢,mobile/password
+        return jsonify(errno=RET.PARAMERR,errmsg='å‚æ•°é”™è¯¯')
+    # è·å–è¯¦ç»†çš„å‚æ•°ä¿¡æ¯,mobile/password
     mobile = user_data.get('mobile')
     password = user_data.get('password')
-    # ²ÎÊıÍêÕûĞÔ½øĞĞĞ£Ñé
+    # å‚æ•°å®Œæ•´æ€§è¿›è¡Œæ ¡éªŒ
     if not all([mobile,password]):
-        return jsonify(errno=RET.PARAMERR,errmsg='²ÎÊıÈ±Ê§')
-    # ¶ÔÊÖ»úºÅ¸ñÊ½½øĞĞ¼ì²é
+        return jsonify(errno=RET.PARAMERR,errmsg='å‚æ•°ç¼ºå¤±')
+    # å¯¹æ‰‹æœºå·æ ¼å¼è¿›è¡Œæ£€æŸ¥
     if not re.match(r'1[3456789]\d{9}',mobile):
-        return jsonify(errno=RET.PARAMERR,errmsg='ÊÖ»úºÅ¸ñÊ½´íÎó')
-    # ²éÑ¯Êı¾İ¿â,È·ÈÏÓÃ»§µÄ´æÔÚ,ÒÔ¼°¶ÔÃÜÂë½øĞĞ¼ì²é
+        return jsonify(errno=RET.PARAMERR,errmsg='æ‰‹æœºå·æ ¼å¼é”™è¯¯')
+    # æŸ¥è¯¢æ•°æ®åº“,ç¡®è®¤ç”¨æˆ·çš„å­˜åœ¨,ä»¥åŠå¯¹å¯†ç è¿›è¡Œæ£€æŸ¥
     try:
         user = User.query.filter_by(mobile=mobile).first()
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='²éÑ¯ÓÃ»§ĞÅÏ¢Òì³£')
-    # Ğ£Ñé²éÑ¯½á¹û,²¢ÇÒ¶ÔÃÜÂë½øĞĞ¼ì²é
+        return jsonify(errno=RET.DBERR,errmsg='æŸ¥è¯¢ç”¨æˆ·ä¿¡æ¯å¼‚å¸¸')
+    # æ ¡éªŒæŸ¥è¯¢ç»“æœ,å¹¶ä¸”å¯¹å¯†ç è¿›è¡Œæ£€æŸ¥
     if user is None or not user.check_password(password):
-        return jsonify(errno=RET.DATAERR,errmsg='ÓÃ»§Ãû»òÃÜÂë´íÎó')
-    # »º´æÓÃ»§ĞÅÏ¢,Ê¹ÓÃsession¶ÔÏó
+        return jsonify(errno=RET.DATAERR,errmsg='ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯')
+    # ç¼“å­˜ç”¨æˆ·ä¿¡æ¯,ä½¿ç”¨sessionå¯¹è±¡
     session['user_id'] = user.id
     session['name'] = user.name
     session['mobile'] = mobile
-    # ·µ»Ø½á¹û
+    # è¿”å›ç»“æœ
     return jsonify(errno=RET.OK,errmsg='OK',data={'user_id':user.id})
 
 
@@ -307,25 +307,25 @@ def login():
 @login_required
 def get_user_profile():
     """
-    »ñÈ¡ÓÃ»§ĞÅÏ¢
-    1/Ê¹ÓÃg±äÁ¿»ñÈ¡ÓÃ»§idÖµ
-    2/¸ù¾İid²éÑ¯Êı¾İ¿â,È·ÈÏÓÃ»§µÄ´æÔÚ
-    3/Ğ£Ñé²éÑ¯½á¹û
-    4/·µ»Ø½á¹û
+    è·å–ç”¨æˆ·ä¿¡æ¯
+    1/ä½¿ç”¨gå˜é‡è·å–ç”¨æˆ·idå€¼
+    2/æ ¹æ®idæŸ¥è¯¢æ•°æ®åº“,ç¡®è®¤ç”¨æˆ·çš„å­˜åœ¨
+    3/æ ¡éªŒæŸ¥è¯¢ç»“æœ
+    4/è¿”å›ç»“æœ
     :return:
     """
-    # »ñÈ¡ÓÃ»§id
+    # è·å–ç”¨æˆ·id
     user_id = g.user_id
-    # ²éÑ¯Êı¾İ¿â
+    # æŸ¥è¯¢æ•°æ®åº“
     try:
         user = User.query.filter_by(id=user_id).first()
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='²éÑ¯ÓÃ»§ĞÅÏ¢Òì³£')
-    # Ğ£Ñé²éÑ¯½á¹û
+        return jsonify(errno=RET.DBERR,errmsg='æŸ¥è¯¢ç”¨æˆ·ä¿¡æ¯å¼‚å¸¸')
+    # æ ¡éªŒæŸ¥è¯¢ç»“æœ
     if not user:
-        return jsonify(errno=RET.NODATA,errmsg='ÎŞĞ§²Ù×÷')
-    # ·µ»ØÓÃ»§µÄ»ù±¾ĞÅÏ¢,µ÷ÓÃÄ£ĞÍÀàÖĞµÄto_dict()·½·¨;
+        return jsonify(errno=RET.NODATA,errmsg='æ— æ•ˆæ“ä½œ')
+    # è¿”å›ç”¨æˆ·çš„åŸºæœ¬ä¿¡æ¯,è°ƒç”¨æ¨¡å‹ç±»ä¸­çš„to_dict()æ–¹æ³•;
     return jsonify(errno=RET.OK,errmsg='OK',data=user.to_dict())
 
 
@@ -333,45 +333,45 @@ def get_user_profile():
 @login_required
 def set_user_avatar():
     """
-    ÉèÖÃÓÃ»§Í·Ïñ
-    1/»ñÈ¡²ÎÊı,ÓÃ»§Ñ¡ÔñÍ¼Æ¬ÎÄ¼ş,request.files,user_id = g.user_id
-    2/¼ì²é²ÎÊıµÄ´æÔÚ
-    3/¶ÁÈ¡Í¼Æ¬Êı¾İ,ÎÄ¼ş¶ÔÏóĞèÒªread/write,
-    4/±£´æ¶ÁÈ¡ºóµÄÍ¼Æ¬Êı¾İ,µ÷ÓÃÆßÅ£ÔÆ½Ó¿Ú,ÉÏ´«Í¼Æ¬ÎÄ¼ş
-    5/±£´æµ÷ÓÃÆßÅ£ÔÆÉÏ´«Í¼Æ¬·µ»ØµÄÍ¼Æ¬Ãû³Æ,±£´æµ½Êı¾İ¿âÖĞ
-    6/Ìá½»Êı¾İ,Êı¾İ¿âÖĞ±£´æµÄÊÇÍ¼Æ¬µÄÏà¶ÔÂ·¾¶
-    7/Æ´½ÓÍ¼Æ¬µÄ¾ø¶ÔÂ·¾¶
-    8/·µ»Ø½á¹û
+    è®¾ç½®ç”¨æˆ·å¤´åƒ
+    1/è·å–å‚æ•°,ç”¨æˆ·é€‰æ‹©å›¾ç‰‡æ–‡ä»¶,request.files,user_id = g.user_id
+    2/æ£€æŸ¥å‚æ•°çš„å­˜åœ¨
+    3/è¯»å–å›¾ç‰‡æ•°æ®,æ–‡ä»¶å¯¹è±¡éœ€è¦read/write,
+    4/ä¿å­˜è¯»å–åçš„å›¾ç‰‡æ•°æ®,è°ƒç”¨ä¸ƒç‰›äº‘æ¥å£,ä¸Šä¼ å›¾ç‰‡æ–‡ä»¶
+    5/ä¿å­˜è°ƒç”¨ä¸ƒç‰›äº‘ä¸Šä¼ å›¾ç‰‡è¿”å›çš„å›¾ç‰‡åç§°,ä¿å­˜åˆ°æ•°æ®åº“ä¸­
+    6/æäº¤æ•°æ®,æ•°æ®åº“ä¸­ä¿å­˜çš„æ˜¯å›¾ç‰‡çš„ç›¸å¯¹è·¯å¾„
+    7/æ‹¼æ¥å›¾ç‰‡çš„ç»å¯¹è·¯å¾„
+    8/è¿”å›ç»“æœ
     :return:
     """
-    # »ñÈ¡user_id
+    # è·å–user_id
     user_id = g.user_id
-    # »ñÈ¡Í¼Æ¬ÎÄ¼ş²ÎÊı,avatarÎª±íµ¥Ò³ÃæµÄname×Ö¶ÎÃû,¶ø²»ÊÇajaxÖĞµÄdataÊı¾İ
+    # è·å–å›¾ç‰‡æ–‡ä»¶å‚æ•°,avatarä¸ºè¡¨å•é¡µé¢çš„nameå­—æ®µå,è€Œä¸æ˜¯ajaxä¸­çš„dataæ•°æ®
     avatar = request.files.get('avatar')
-    # ¼ì²é²ÎÊı´æÔÚ
+    # æ£€æŸ¥å‚æ•°å­˜åœ¨
     if not avatar:
-        return jsonify(errno=RET.PARAMERR,errmsg='Î´ÉÏ´«Í¼Æ¬')
-    # ¶ÁÈ¡Í¼Æ¬Êı¾İ
+        return jsonify(errno=RET.PARAMERR,errmsg='æœªä¸Šä¼ å›¾ç‰‡')
+    # è¯»å–å›¾ç‰‡æ•°æ®
     avatar_data = avatar.read()
-    # µ÷ÓÃÆßÅ£ÔÆ½Ó¿Ú,ÊµÏÖÉÏ´«Í·Ïñ
+    # è°ƒç”¨ä¸ƒç‰›äº‘æ¥å£,å®ç°ä¸Šä¼ å¤´åƒ
     try:
-        # µ÷ÓÃÆßÅ£ÔÆ·µ»ØµÄÊÇÍ¼Æ¬Ãû³Æ,¼´Ïà¶ÔÂ·¾¶
+        # è°ƒç”¨ä¸ƒç‰›äº‘è¿”å›çš„æ˜¯å›¾ç‰‡åç§°,å³ç›¸å¯¹è·¯å¾„
         image_name = storage(avatar_data)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.THIRDERR,errmsg='ÉÏ´«ÆßÅ£ÔÆÒì³£')
-    # ±£´æÍ¼Æ¬µÄÏà¶ÔÂ·¾¶µ½Êı¾İ¿âÖĞ
+        return jsonify(errno=RET.THIRDERR,errmsg='ä¸Šä¼ ä¸ƒç‰›äº‘å¼‚å¸¸')
+    # ä¿å­˜å›¾ç‰‡çš„ç›¸å¯¹è·¯å¾„åˆ°æ•°æ®åº“ä¸­
     try:
-        # ¸ù¾İid²éÑ¯ÓÃ»§,²¢¸üĞÂÓÃ»§µÄÍ·Ïñ
+        # æ ¹æ®idæŸ¥è¯¢ç”¨æˆ·,å¹¶æ›´æ–°ç”¨æˆ·çš„å¤´åƒ
         User.query.filter_by(id=user_id).update({'avatar_url':image_name})
         db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
         db.session.rollback()
-        return jsonify(errno=RET.DBERR,errmsg='±£´æÓÃ»§Í·ÏñÊ§°Ü')
-    # ·µ»ØÇ°¶ËÍ¼Æ¬µÄ¾ø¶ÔÂ·¾¶
+        return jsonify(errno=RET.DBERR,errmsg='ä¿å­˜ç”¨æˆ·å¤´åƒå¤±è´¥')
+    # è¿”å›å‰ç«¯å›¾ç‰‡çš„ç»å¯¹è·¯å¾„
     image_url = constants.QINIU_DOMIN_PREFIX + image_name
-    # ·µ»Ø½á¹û
+    # è¿”å›ç»“æœ
     return jsonify(errno=RET.OK,errmsg='OK',data={'avatar_url':image_url})
 
 
@@ -379,39 +379,39 @@ def set_user_avatar():
 @login_required
 def change_user_profile():
     """
-    ĞŞ¸ÄÓÃ»§Ãû
-    1/»ñÈ¡²ÎÊı,get_json()·½·¨,user_id,name
-    2/²ÎÊı¼ì²é,²ÎÊıµÄ´æÔÚ
-    3/»ñÈ¡putÇëÇóÊı¾İÀïµÄnameÖµ
-    4/°ÑnameĞÅÏ¢±£´æµ½Êı¾İ¿âÖĞ,
+    ä¿®æ”¹ç”¨æˆ·å
+    1/è·å–å‚æ•°,get_json()æ–¹æ³•,user_id,name
+    2/å‚æ•°æ£€æŸ¥,å‚æ•°çš„å­˜åœ¨
+    3/è·å–putè¯·æ±‚æ•°æ®é‡Œçš„nameå€¼
+    4/æŠŠnameä¿¡æ¯ä¿å­˜åˆ°æ•°æ®åº“ä¸­,
     User.query.filter_by(id=user_id)update({'name':name})
-    5/Ìá½»Êı¾İ,Èç¹û·¢ÉúÒì³£ĞèÒª½øĞĞ»Ø¹ö
-    6/¸üĞÂ»º´æµÄÓÃ»§ĞÅÏ¢
-    7/·µ»Ø½á¹û
+    5/æäº¤æ•°æ®,å¦‚æœå‘ç”Ÿå¼‚å¸¸éœ€è¦è¿›è¡Œå›æ»š
+    6/æ›´æ–°ç¼“å­˜çš„ç”¨æˆ·ä¿¡æ¯
+    7/è¿”å›ç»“æœ
     :return:
     """
     user_id = g.user_id
-    # »ñÈ¡²ÎÊı,putÇëÇóµÄdataÊı¾İ
+    # è·å–å‚æ•°,putè¯·æ±‚çš„dataæ•°æ®
     user_data = request.get_json()
-    # ¼ì²é²ÎÊı
+    # æ£€æŸ¥å‚æ•°
     if not user_data:
-        return jsonify(errno=RET.PARAMERR,errmsg='²ÎÊı´íÎó')
-    # »ñÈ¡ÏêÏ¸µÄ²ÎÊıĞÅÏ¢
+        return jsonify(errno=RET.PARAMERR,errmsg='å‚æ•°é”™è¯¯')
+    # è·å–è¯¦ç»†çš„å‚æ•°ä¿¡æ¯
     name = user_data.get('name')
-    # ¼ì²éname
+    # æ£€æŸ¥name
     if not name:
-        return jsonify(errno=RET.PARAMERR,errmsg='ÓÃ»§Ãû²»ÄÜÎª¿Õ')
-    # ¸üĞÂÊı¾İ¿âÖĞµÄÓÃ»§ÃûĞÅÏ¢
+        return jsonify(errno=RET.PARAMERR,errmsg='ç”¨æˆ·åä¸èƒ½ä¸ºç©º')
+    # æ›´æ–°æ•°æ®åº“ä¸­çš„ç”¨æˆ·åä¿¡æ¯
     try:
         User.query.filter_by(id=user_id).update({'name':name})
         db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
         db.session.rollback()
-        return jsonify(errno=RET.DBERR,errmsg='¸üĞÂÓÃ»§ÃûÊ§°Ü')
-    # ¸üĞÂ»º´æÖĞÓÃ»§ĞÅÏ¢
+        return jsonify(errno=RET.DBERR,errmsg='æ›´æ–°ç”¨æˆ·åå¤±è´¥')
+    # æ›´æ–°ç¼“å­˜ä¸­ç”¨æˆ·ä¿¡æ¯
     session['name'] = name
-    # ·µ»Ø½á¹û
+    # è¿”å›ç»“æœ
     return jsonify(errno=RET.OK,errmsg='OK',data={'name':name})
 
 
@@ -419,38 +419,38 @@ def change_user_profile():
 @login_required
 def set_user_auth():
     """
-    ÊµÃûÈÏÖ¤
-    1/»ñÈ¡²ÎÊı,postÇëÇóµÄdataÊı¾İ,user_id
-    2/¼ì²é²ÎÊıµÄ´æÔÚ
-    3/»ñÈ¡ÏêÏ¸µÄ²ÎÊıĞÅÏ¢,real_name,id_card
-    4/²éÑ¯Êı¾İ¿â,Ö´ĞĞ¸üĞÂÓÃ»§ĞÅÏ¢
+    å®åè®¤è¯
+    1/è·å–å‚æ•°,postè¯·æ±‚çš„dataæ•°æ®,user_id
+    2/æ£€æŸ¥å‚æ•°çš„å­˜åœ¨
+    3/è·å–è¯¦ç»†çš„å‚æ•°ä¿¡æ¯,real_name,id_card
+    4/æŸ¥è¯¢æ•°æ®åº“,æ‰§è¡Œæ›´æ–°ç”¨æˆ·ä¿¡æ¯
     User.query.filter_by(id=user_id,real_name=None,id_card=None).update({'real_name':real_name,'id_card':id_card})
-    5/Ìá½»Êı¾İ,Èç¹û·¢ÉúÒì³£ĞèÒª½øĞĞ»Ø¹ö
-    6/·µ»Ø½á¹û
+    5/æäº¤æ•°æ®,å¦‚æœå‘ç”Ÿå¼‚å¸¸éœ€è¦è¿›è¡Œå›æ»š
+    6/è¿”å›ç»“æœ
     :return:
     """
     user_id = g.user_id
-    # »ñÈ¡²ÎÊı
+    # è·å–å‚æ•°
     user_data = request.get_json()
-    # ¼ì²é²ÎÊı
+    # æ£€æŸ¥å‚æ•°
     if not user_data:
-        return jsonify(errno=RET.PARAMERR,errmsg='²ÎÊı´íÎó')
-    # »ñÈ¡ÏêÏ¸µÄ²ÎÊıĞÅÏ¢
+        return jsonify(errno=RET.PARAMERR,errmsg='å‚æ•°é”™è¯¯')
+    # è·å–è¯¦ç»†çš„å‚æ•°ä¿¡æ¯
     real_name = user_data.get('real_name')
     id_card = user_data.get('id_card')
-    # ²ÎÊıµÄÍêÕûĞÔ¼ì²é
+    # å‚æ•°çš„å®Œæ•´æ€§æ£€æŸ¥
     if not all([real_name,id_card]):
-        return jsonify(errno=RET.PARAMERR,errmsg='²ÎÊıÈ±Ê§')
-    # Ö´ĞĞÉèÖÃÓÃ»§ÊµÃûĞÅÏ¢
+        return jsonify(errno=RET.PARAMERR,errmsg='å‚æ•°ç¼ºå¤±')
+    # æ‰§è¡Œè®¾ç½®ç”¨æˆ·å®åä¿¡æ¯
     try:
-        # ÎªÁËÈ·±£ÊµÃûÈÏÖ¤Ö»Ö´ĞĞÒ»´Î,ÈÃreal_nameºÍid_cardÎªNoneµÄÇé¿öÏÂ,Ö´ĞĞupdate
+        # ä¸ºäº†ç¡®ä¿å®åè®¤è¯åªæ‰§è¡Œä¸€æ¬¡,è®©real_nameå’Œid_cardä¸ºNoneçš„æƒ…å†µä¸‹,æ‰§è¡Œupdate
         User.query.filter_by(id=user_id,real_name=None,id_card=None).update({'real_name':real_name,'id_card':id_card})
         db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
         db.session.rollback()
-        return jsonify(errno=RET.DBERR,errmsg='±£´æÓÃ»§ÊµÃûĞÅÏ¢Ê§°Ü')
-    # ·µ»Ø½á¹û
+        return jsonify(errno=RET.DBERR,errmsg='ä¿å­˜ç”¨æˆ·å®åä¿¡æ¯å¤±è´¥')
+    # è¿”å›ç»“æœ
     return jsonify(errno=RET.OK,errmsg='OK')
 
 
@@ -458,24 +458,24 @@ def set_user_auth():
 @login_required
 def get_user_auth():
     """
-    »ñÈ¡ÓÃ»§µÄÊµÃûĞÅÏ¢
-    1/»ñÈ¡ÓÃ»§µÄid
-    2/¸ù¾İid²éÑ¯Êı¾İ¿â,±£´æ²éÑ¯½á¹û
-    3/Ğ£Ñé²éÑ¯½á¹û
-    4/·µ»Ø½á¹û,data=user.auth_to_dict()
+    è·å–ç”¨æˆ·çš„å®åä¿¡æ¯
+    1/è·å–ç”¨æˆ·çš„id
+    2/æ ¹æ®idæŸ¥è¯¢æ•°æ®åº“,ä¿å­˜æŸ¥è¯¢ç»“æœ
+    3/æ ¡éªŒæŸ¥è¯¢ç»“æœ
+    4/è¿”å›ç»“æœ,data=user.auth_to_dict()
     :return:
     """
     user_id = g.user_id
-    # ²éÑ¯myqlÊı¾İ¿â
+    # æŸ¥è¯¢myqlæ•°æ®åº“
     try:
         user = User.query.filter_by(id=user_id).first()
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='²éÑ¯ÓÃ»§ÊµÃûĞÅÏ¢Ê§°Ü')
-    # Ğ£Ñé²éÑ¯½á¹û
+        return jsonify(errno=RET.DBERR,errmsg='æŸ¥è¯¢ç”¨æˆ·å®åä¿¡æ¯å¤±è´¥')
+    # æ ¡éªŒæŸ¥è¯¢ç»“æœ
     if not user:
-        return jsonify(errno=RET.NODATA,errmsg='ÎŞĞ§²Ù×÷')
-    # ·µ»Ø½á¹û
+        return jsonify(errno=RET.NODATA,errmsg='æ— æ•ˆæ“ä½œ')
+    # è¿”å›ç»“æœ
     return jsonify(errno=RET.OK,errmsg='OK',data=user.auth_to_dict())
 
 
@@ -483,17 +483,17 @@ def get_user_auth():
 @login_required
 def logout():
     """
-    ÍË³öµÇÂ½
-    1/Ê¹ÓÃÇëÇóÉÏÏÂÎÄ¶ÔÏósessionÀ´ÊµÏÖÇå¿ÕÓÃ»§µÄ»º´æĞÅÏ¢
-    2/·µ»Ø½á¹û
+    é€€å‡ºç™»é™†
+    1/ä½¿ç”¨è¯·æ±‚ä¸Šä¸‹æ–‡å¯¹è±¡sessionæ¥å®ç°æ¸…ç©ºç”¨æˆ·çš„ç¼“å­˜ä¿¡æ¯
+    2/è¿”å›ç»“æœ
 
     :return:
     """
     # BUG:csrf_token missing
-    # ÔÚÇå³ıcsrf_tokenÖ®Ç°,ÏÈ±£´æcsrf_token
+    # åœ¨æ¸…é™¤csrf_tokenä¹‹å‰,å…ˆä¿å­˜csrf_token
     csrf_token = session.get('csrf_token')
     session.clear()
-    # ÔÚÇå¿Õredis»º´æĞÅÏ¢ºóÔÙ´ÎÉèÖÃcsrf_token
+    # åœ¨æ¸…ç©ºredisç¼“å­˜ä¿¡æ¯åå†æ¬¡è®¾ç½®csrf_token
     session['csrf_token'] = csrf_token
     return jsonify(errno=RET.OK,errmsg='OK')
 
@@ -501,15 +501,15 @@ def logout():
 @api.route('/session',methods=['GET'])
 def check_user_login():
     """
-    ¼ì²éÓÃ»§µÇÂ½×´Ì¬
-    1/Ê¹ÓÃsession¶ÔÏóÀ´»ñÈ¡name,redis»º´æ
-    2/ÅĞ¶Ï»ñÈ¡½á¹û,Èç¹ûÓĞµÇÂ½ĞÅÏ¢,·µ»Øname
-    3/Èç¹ûÎ´µÇÂ½,Ä¬ÈÏ·µ»Øfalse
+    æ£€æŸ¥ç”¨æˆ·ç™»é™†çŠ¶æ€
+    1/ä½¿ç”¨sessionå¯¹è±¡æ¥è·å–name,redisç¼“å­˜
+    2/åˆ¤æ–­è·å–ç»“æœ,å¦‚æœæœ‰ç™»é™†ä¿¡æ¯,è¿”å›name
+    3/å¦‚æœæœªç™»é™†,é»˜è®¤è¿”å›false
     :return:
     """
-    # »ñÈ¡ÓÃ»§µÇÂ½ĞÅÏ¢
+    # è·å–ç”¨æˆ·ç™»é™†ä¿¡æ¯
     name = session.get('name')
-    # ÅĞ¶Ï»ñÈ¡½á¹û
+    # åˆ¤æ–­è·å–ç»“æœ
     if name is not None:
         return jsonify(errno=RET.OK,errmsg='true',data={'name':name})
     else:

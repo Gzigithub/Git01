@@ -1,4 +1,4 @@
-﻿1.Python中的元类(metaclass)
+1.Python中的元类(metaclass)
 而在python中，类也是对象，这样的对象就是通过元类来创建的。元类就是"类的类"。
 上文中提到的type事实上就是一个元类，在python中，所有的类都是使用type创建的。
 

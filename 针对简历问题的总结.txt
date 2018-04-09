@@ -1,392 +1,392 @@
-1.ʲô��socket
-	socket(��� �׽���) �ǽ��̼�ͨ�ŵ�һ�ַ�ʽ�������������̼�ͨ�ŵ�һ����Ҫ��ͬ�ǣ�
-����ʵ�ֲ�ͬ������Ľ��̼�ͨ�ţ����������ϸ��ָ����ķ����඼�ǻ��� Socket �����ͨ�ŵ�
-��������ÿ�������ҳ��QQ ���졢�շ� email �ȵ�
+1.什么是socket
+	socket(简称 套接字) 是进程间通信的一种方式，它与其他进程间通信的一个主要不同是：
+它能实现不同主机间的进程间通信，我们网络上各种各样的服务大多都是基于 Socket 来完成通信的
+例如我们每天浏览网页、QQ 聊天、收发 email 等等
 
-2.TCP���
-	TCPЭ�飬�������Э�飨Ӣ�Transmission Control Protocol����дΪ TCP����һ���������ӵġ��ɿ��ġ������ֽ����Ĵ����ͨ��Э�顣
-3.TCP�ص㣺
-	1. ��������
-	ͨ��˫�������Ƚ������Ӳ��ܽ������ݵĴ��䣬˫��������Ϊ�����ӷ����Ҫ��ϵͳ�ں���Դ���Թ������ӵ�״̬�������ϵĴ��䡣
-	˫��������ݴ��䶼����ͨ����һ�����ӽ��С�
-	������ݽ�����˫������Ͽ������ӣ����ͷ�ϵͳ��Դ��
-	����������һ��һ�ģ����TCP�������ڹ㲥��Ӧ�ó��򣬻��ڹ㲥��Ӧ�ó�����ʹ��UDPЭ�顣
-	2. �ɿ�����
-	1��TCP���÷���Ӧ�����
-	TCP���͵�ÿ�����Ķζ�����õ����շ���Ӧ�����Ϊ���TCP���Ķδ���ɹ�
-	2����ʱ�ش�
-	���Ͷ˷���һ�����Ķ�֮���������ʱ��������ڶ�ʱʱ����û���յ�Ӧ������·���������ĶΡ�
-	TCPΪ�˱�֤�������������͸�ÿ����һ����ţ�ͬʱ���Ҳ��֤�˴��͵����ն�ʵ��İ��İ�����ա�Ȼ����ն�ʵ����ѳɹ��յ��İ�����һ����Ӧ��ȷ�ϣ�ACK����
-	������Ͷ�ʵ���ں���������ʱ�ӣ�RTT����δ�յ�ȷ�ϣ���ô��Ӧ�����ݰ��ͱ�����Ϊ�Ѷ�ʧ���ᱻ�����ش���
-	3������У��
-	TCP��һ��У��ͺ��������������Ƿ��д����ڷ��ͺͽ���ʱ��Ҫ����У��͡�
-	4) �������ƺ���������
-	�����������������������͵ù����ʹ���շ���������ȫ���¡�
+2.TCP简介
+	TCP协议，传输控制协议（英语：Transmission Control Protocol，缩写为 TCP）是一种面向连接的、可靠的、基于字节流的传输层通信协议。
+3.TCP特点：
+	1. 面向连接
+	通信双方必须先建立连接才能进行数据的传输，双方都必须为该连接分配必要的系统内核资源，以管理连接的状态和连接上的传输。
+	双方间的数据传输都可以通过这一个连接进行。
+	完成数据交换后，双方必须断开此连接，以释放系统资源。
+	这种连接是一对一的，因此TCP不适用于广播的应用程序，基于广播的应用程序请使用UDP协议。
+	2. 可靠传输
+	1）TCP采用发送应答机制
+	TCP发送的每个报文段都必须得到接收方的应答才认为这个TCP报文段传输成功
+	2）超时重传
+	发送端发出一个报文段之后就启动定时器，如果在定时时间内没有收到应答就重新发送这个报文段。
+	TCP为了保证不发生丢包，就给每个包一个序号，同时序号也保证了传送到接收端实体的包的按序接收。然后接收端实体对已成功收到的包发回一个相应的确认（ACK）；
+	如果发送端实体在合理的往返时延（RTT）内未收到确认，那么对应的数据包就被假设为已丢失将会被进行重传。
+	3）错误校验
+	TCP用一个校验和函数来检验数据是否有错误；在发送和接收时都要计算校验和。
+	4) 流量控制和阻塞管理
+	流量控制用来避免主机发送得过快而使接收方来不及完全收下。
 
-4.TCP��UDP�Ĳ�ͬ�㣺
-	�������ӣ�ȷ���д����������գ������Ѵ����������䡣��
-	�������ݴ���
-	�ط���ʧ�����ݰ�
-	�����ظ������ݰ�
-	�޲�������ݴ���
-	����/��������
+4.TCP与UDP的不同点：
+	面向连接（确认有创建三方交握，连接已创建才作传输。）
+	有序数据传输
+	重发丢失的数据包
+	舍弃重复的数据包
+	无差错的数据传输
+	阻塞/流量控制
 	
-5.gevent����monkey������򲹶�
-	ʹ�ú��Ӳ����ķ�ʽ��gevent�ܹ��޸ı�׼������󲿷ֵ�����ʽϵͳ���ã�����socket��ssl��threading�� select��ģ�飬����ΪЭ��ʽ���С�
-Ҳ����ͨ�����Ӳ�����monkey.patch_xxx()����python��׼����ģ������ĳ�gevent�е���Ӧ�ľ���Э�̵�Э��ʽ���������ڲ��ı�ԭ�д��������£���Ӧ�õ�����ʽ���������Э��ʽ�ġ�
+5.gevent里面monkey给程序打补丁
+	使用猴子补丁的方式，gevent能够修改标准库里面大部分的阻塞式系统调用，包括socket、ssl、threading和 select等模块，而变为协作式运行。
+也就是通过猴子补丁的monkey.patch_xxx()来将python标准库中模块或函数改成gevent中的响应的具有协程的协作式对象。这样在不改变原有代码的情况下，将应用的阻塞式方法，变成协程式的。
 
-6.������ָ��������������cpu������ͨ������ϵͳ�ĸ�����������㷨��ʵ���ö������һ��ִ�У�ʵ��������һЩ������ִ�У���Ϊ�л�������ٶ��൱�죬����ȥһ��ִ�ж��ѣ�
-���У�ָ����������С�ڵ���cpu�����������������һ��ִ�е�
+6.并发：指的是任务数多余cpu核数，通过操作系统的各种任务调度算法，实现用多个任务“一起”执行（实际上总有一些任务不在执行，因为切换任务的速度相当快，看上去一起执行而已）
+并行：指的是任务数小于等于cpu核数，即任务真的是一起执行的
 
-7.�߳�threading
-	�������߳�ͬʱ��ͬһ��ȫ�ֱ����������������Դ�������⣬�Ӷ����ݽ���᲻��ȷ��
-python��threading.Thread����һ��run���������ڶ����̵߳Ĺ��ܺ������������Լ����߳����и��Ǹ÷�����
-�������Լ����߳�ʵ����ͨ��Thread���start�����������������̣߳�����python��������е��ȣ������̻߳��ִ�еĻ���ʱ���ͻ����run����ִ���̡߳�
-��һ�������ڵ������̹߳���ȫ�ֱ������ܷ����ڶ���̼߳乲�����ݡ�
-ȱ����ǣ��߳��Ƕ�ȫ�ֱ���������Ŀ�����ɶ��߳�֮���ȫ�ֱ����Ļ��ң����̷߳ǰ�ȫ��
+7.线程threading
+	如果多个线程同时对同一个全局变量操作，会出现资源竞争问题，从而数据结果会不正确。
+python的threading.Thread类有一个run方法，用于定义线程的功能函数，可以在自己的线程类中覆盖该方法。
+而创建自己的线程实例后，通过Thread类的start方法，可以启动该线程，交给python虚拟机进行调度，当该线程获得执行的机会时，就会调用run方法执行线程。
+在一个进程内的所有线程共享全局变量，很方便在多个线程间共享数据。
+缺点就是，线程是对全局变量随意遂改可能造成多线程之间对全局变量的混乱（即线程非安全）
 
-8.����Process
-	���̣�һ���������������󣬴���+�õ�����Դ ��֮Ϊ���̣����ǲ���ϵͳ������Դ�Ļ�����Ԫ��
-���̣��ܹ���ɶ����񣬱��� ��һ̨�������ܹ�ͬʱ���ж��QQ
-�̣߳��ܹ���ɶ����񣬱��� һ��QQ�еĶ�����촰��
-������ϵͳ������Դ����͵��ȵ�һ��������λ��
-�߳��ǽ��̵�һ��ʵ��,��CPU���Ⱥͷ��ɵĻ�����λ��
-һ������������һ������,һ������������һ���߳�.
-�̵߳Ļ��ֳ߶�С�ڽ���(��Դ�Ƚ�����)��ʹ�ö��̳߳���Ĳ����Ըߡ�
-������ִ�й�����ӵ�ж������ڴ浥Ԫ��������̹߳����ڴ棬�Ӷ����������˳��������Ч�ʡ�
-�̺߳ͽ�����ʹ���ϸ�����ȱ�㣺�߳�ִ�п���С������������Դ�Ĺ����ͱ��������������෴��
+8.进程Process
+	进程：一个程序运行起来后，代码+用到的资源 称之为进程，它是操作系统分配资源的基本单元。
+进程，能够完成多任务，比如 在一台电脑上能够同时运行多个QQ
+线程，能够完成多任务，比如 一个QQ中的多个聊天窗口
+进程是系统进行资源分配和调度的一个独立单位。
+线程是进程的一个实体,是CPU调度和分派的基本单位。
+一个程序至少有一个进程,一个进程至少有一个线程.
+线程的划分尺度小于进程(资源比进程少)，使得多线程程序的并发性高。
+进程在执行过程中拥有独立的内存单元，而多个线程共享内存，从而极大地提高了程序的运行效率。
+线程和进程在使用上各有优缺点：线程执行开销小，但不利于资源的管理和保护；而进程正相反。
 
-9.Э��Coroutine��yield��greenlet��gevent��
-	��һ���߳��е�ĳ���������������κεط����浱ǰ������һЩ��ʱ��������Ϣ��Ȼ���л�������һ��������ִ�У�
-ע�ⲻ��ͨ�����ú����ķ�ʽ�����ģ������л��Ĵ����Լ�ʲôʱ�����л���ԭ���ĺ������ɿ������Լ�ȷ��
-	����IO�����ǳ���ʱ������ʹ�����ڵȴ�״̬������geventΪ�����Զ��л�Э�̣��ͱ�֤����greenlet�����У������ǵȴ�IO
+9.协程Coroutine（yield，greenlet，gevent）
+	在一个线程中的某个函数，可以在任何地方保存当前函数的一些临时变量等信息，然后切换到另外一个函数中执行，
+注意不是通过调用函数的方式做到的，并且切换的次数以及什么时候再切换到原来的函数都由开发者自己确定
+	由于IO操作非常耗时，经常使程序处于等待状态，有了gevent为我们自动切换协程，就保证总有greenlet在运行，而不是等待IO
 
-10.���̡��̡߳�Э�̶Ա�
-��������Դ����ĵ�λ
-�߳��ǲ���ϵͳ���ȵĵ�λ
-�����л���Ҫ����Դ�����Ч�ʺܵ�
-�߳��л���Ҫ����Դһ�㣬Ч��һ�㣨��Ȼ���ڲ�����GIL������£�
-Э���л�������Դ��С��Ч�ʸ�
-����̡����̸߳���cpu������һ�������ǲ��еģ�����Э������һ���߳��� �����ǲ���
+10.进程、线程、协程对比
+进程是资源分配的单位
+线程是操作系统调度的单位
+进程切换需要的资源很最大，效率很低
+线程切换需要的资源一般，效率一般（当然了在不考虑GIL的情况下）
+协程切换任务资源很小，效率高
+多进程、多线程根据cpu核数不一样可能是并行的，但是协程是在一个线程中 所以是并发
 
-11.html����
-	HTML�� HyperText Mark-up Language ������ĸ��д����˼�ǳ��ı�������ԣ����ı�ָ���ǳ����ӣ����ָ���Ǳ�ǩ��
-��һ������������ҳ�����ԣ�����������һ�����ı�ǩ��ɣ������������������ļ��������һ���ı��ļ����ļ�����չ��Ϊhtml����htm��
+11.html概述
+	HTML是 HyperText Mark-up Language 的首字母简写，意思是超文本标记语言，超文本指的是超链接，标记指的是标签，
+是一种用来制作网页的语言，这种语言由一个个的标签组成，用这种语言制作的文件保存的是一个文本文件，文件的扩展名为html或者htm。
 
-12.css����
-	Ϊ������ҳԪ�ص���ʽ���ӷḻ��ҲΪ������ҳ�����ݺ���ʽ�ܲ�ֿ���CSS�ɴ�˼���������CSS�� Cascading Style Sheets ������ĸ��д����˼�ǲ����ʽ����
-����CSS��html�д󲿷ֱ�����ʽ�ı�ǩ�ͷ��������ˣ�htmlֻ�����ĵ��Ľṹ�����ݣ�������ʽ��ȫ����CSS��html�ĵ���ø��Ӽ�ࡣ
+12.css概述
+	为了让网页元素的样式更加丰富，也为了让网页的内容和样式能拆分开，CSS由此思想而诞生，CSS是 Cascading Style Sheets 的首字母缩写，意思是层叠样式表。
+有了CSS，html中大部分表现样式的标签就废弃不用了，html只负责文档的结构和内容，表现形式完全交给CSS，html文档变得更加简洁。
 
-13.JavaScript����
-	JavaScript��������������˵ĽŲ����ԣ�JavaScript��Ҫ�������ǰ�����û����������⣬����ʹ�ý��������ݽ����� JavaScript�����������ִ�еģ�ǰ�˽ű����Ի���JScript��΢����IE���У���ActionScript( Adobe��˾����Ҫ���)�ȡ�
+13.JavaScript介绍
+	JavaScript是运行在浏览器端的脚步语言，JavaScript主要解决的是前端与用户交互的问题，包括使用交互与数据交互。 JavaScript是浏览器解释执行的，前端脚本语言还有JScript（微软，IE独有），ActionScript( Adobe公司，需要插件)等。
 
-ǰ������� 
-1��HTML��ҳ��ṹ
-2��CSS��ҳ����֣�Ԫ�ش�С����ɫ��λ�á����ػ���ʾ�����ֶ���Ч��
-3��JavaScript��ҳ����Ϊ�����ֶ���Ч����ҳ�����û��Ľ�����ҳ�湦��
+前端三大块 
+1、HTML：页面结构
+2、CSS：页面表现：元素大小、颜色、位置、隐藏或显示、部分动画效果
+3、JavaScript：页面行为：部分动画效果、页面与用户的交互、页面功能
 
-14.jquery����
-	jQuery��Ŀǰʹ����㷺��javascript�����⡣
+14.jquery介绍
+	jQuery是目前使用最广泛的javascript函数库。
 	
-15.ajax��jsonp
-	ajax������Ŀ������javascript����http�������̨ͨ�ţ���ȡ���ݺ���Ϣ��
-ajax������ԭ����ʵ����xmlhttp����ʹ�ô˶������̨ͨ�š�ajaxͨ�ŵĹ��̲���Ӱ�����javascript��ִ�У��Ӷ�ʵ���첽��
-	ajax����ʵ�־ֲ�ˢ�£�Ҳ������ˢ�£���ˢ��ָ��������ҳ�治ˢ�£�ֻ�Ǿֲ�ˢ�£�ajax�����Լ�����http���󣬲���ͨ��������ĵ�ַ��������ҳ�����岻��ˢ�£�ajax��ȡ����̨���ݣ�����ҳ����ʾ���ݵĲ��֣���������ҳ��ֲ�ˢ�¡�
-	ajax�����ҳ�����Դֻ����ͬһ�����������Դ�����������������Դ�����������ajaxʱ���ڰ�ȫ�Ŀ���
+15.ajax与jsonp
+	ajax技术的目的是让javascript发送http请求，与后台通信，获取数据和信息。
+ajax技术的原理是实例化xmlhttp对象，使用此对象与后台通信。ajax通信的过程不会影响后续javascript的执行，从而实现异步。
+	ajax可以实现局部刷新，也叫做无刷新，无刷新指的是整个页面不刷新，只是局部刷新，ajax可以自己发送http请求，不用通过浏览器的地址栏，所以页面整体不会刷新，ajax获取到后台数据，更新页面显示数据的部分，就做到了页面局部刷新。
+	ajax请求的页面或资源只能是同一个域下面的资源，不能是其他域的资源，这是在设计ajax时基于安全的考虑
 	
-$.ajaxʹ�÷��� 
-���ò�����
-1��url �����ַ
-2��type ����ʽ��Ĭ����'GET'�����õĻ���'POST'
-3��dataType ���÷��ص����ݸ�ʽ�����õ���'json'��ʽ��Ҳ��������Ϊ'html'
-4��data ���÷��͸�������������
-5��success ��������ɹ���Ļص�����
-6��error ��������ʧ�ܺ�Ļص�����
-7��async �����Ƿ��첽��Ĭ��ֵ��'true'����ʾ�첽
+$.ajax使用方法 
+常用参数：
+1、url 请求地址
+2、type 请求方式，默认是'GET'，常用的还有'POST'
+3、dataType 设置返回的数据格式，常用的是'json'格式，也可以设置为'html'
+4、data 设置发送给服务器的数据
+5、success 设置请求成功后的回调函数
+6、error 设置请求失败后的回调函数
+7、async 设置是否异步，默认值是'true'，表示异步
 
 jsonp 
-ajaxֻ������ͬһ�����µ����ݻ���Դ����ʱ����Ҫ�����������ݣ�����Ҫ�õ�jsonp������jsonp���Կ����������ݣ�����ԭ����Ҫ��������<script>��ǩ���Կ���������Դ�����ԡ�
-jsonp��ajaxԭ����ȫ��һ��������jquery�����Ƿ�װ��ͬһ��������
+ajax只能请求同一个域下的数据或资源，有时候需要跨域请求数据，就需要用到jsonp技术，jsonp可以跨域请求数据，它的原理主要是利用了<script>标签可以跨域链接资源的特性。
+jsonp和ajax原理完全不一样，不过jquery将它们封装成同一个函数。
 
 
 16.Whoosh + jieba
-����ҳ��
-��ݮ  GoodsSKU   df_sku
-select * from df_sku where name like ��%��ݮ%�� or title like ��%��ݮ%�� 
-��ݮ
-��ݮ 500g    ���ں�װ��ݮ��������    С��ݮ
+搜索页面
+草莓  GoodsSKU   df_sku
+select * from df_sku where name like ‘%草莓%’ or title like ‘%草莓%’ 
+草莓
+草莓 500g    深圳盒装草莓物美价廉    小草莓
 Dong  678
-ȫ�ļ���
-��������  
-1.�������ݵ�������    ��ݮ sku= 1 2 3   ��ΧϺ sku =100
-2.�������ķִʲ��� *
+全文检索
+搜索引擎  
+1.建立数据的索引表    草莓 sku= 1 2 3   基围虾 sku =100
+2.进行中文分词操作 *
 whoosh  
-�������
-haystack  ����û�����������֮��Ĺ�ͨ����
+搜索框架
+haystack  搭建了用户和搜索引擎之间的沟通问题
 
-��base.html�б༭������
-�������ģ�壺��templates/search/Ŀ¼�´���search.html
-����������з�ҳ����ͼ��ģ���д��ݵ�����������
-query�������ؼ���
-page����ǰҳ��page����
-paginator����ҳpaginator����
-��ͼ���յĲ������£�
-����q��ʾ�������ݣ����ݵ�ģ���е�����Ϊquery
-����page��ʾ��ǰҳ��
-�����б�ҳ��ģ���������������ҳ��ģ��
-����ģ��search.html
+在base.html中编辑搜索栏
+搜索结果模板：在templates/search/目录下创建search.html
+搜索结果进行分页，视图向模板中传递的上下文如下
+query：搜索关键字
+page：当前页的page对象
+paginator：分页paginator对象
+视图接收的参数如下：
+参数q表示搜索内容，传递到模板中的数据为query
+参数page表示当前页码
+根据列表页的模板来制作搜索结果页的模板
+创建模板search.html
 
-haystack��django�Ŀ�Դ������ܣ��ÿ��֧��Solr,Elasticsearch,Whoosh, *Xapian*�������棬���ø��Ĵ��룬ֱ���л����棬���ٴ�������
-��������ʹ��Whoosh������һ���ɴ�Pythonʵ�ֵ�ȫ���������棬û�ж������ļ��ȣ��Ƚ�С�ɣ����ñȽϼ򵥣���Ȼ������Ȼ�Ե͡�
-���ķִ�Jieba������Whoosh�Դ�����Ӣ�ķִʣ������ĵķִ�֧�ֲ���̫�ã�����jieba�滻whoosh�ķִ������
+haystack是django的开源搜索框架，该框架支持Solr,Elasticsearch,Whoosh, *Xapian*搜索引擎，不用更改代码，直接切换引擎，减少代码量。
+搜索引擎使用Whoosh，这是一个由纯Python实现的全文搜索引擎，没有二进制文件等，比较小巧，配置比较简单，当然性能自然略低。
+中文分词Jieba，由于Whoosh自带的是英文分词，对中文的分词支持不是太好，故用jieba替换whoosh的分词组件。
 
-17.9.3���¹��ﳵ
-���ݵ�  /cart/add?sku_id=1&num=2
-�ݵ� /cart/update?sku_id=1&finally_num=18
+17.9.3更新购物车
+非幂等  /cart/add?sku_id=1&num=2
+幂等 /cart/update?sku_id=1&finally_num=18
 
-����ͬһ����Ϊ�����ִ�в��۶��ٴΣ����յĽ������һ����ͬ�ģ��ͳ�������Ϊ���ݵȵ�
-����ͬһ����Ϊ��������յĽ����ִ�еĴ����йأ�ÿ��ִ�к���������ͬ���ͳ�������ΪΪ���ݵ�
+对于同一种行为，如果执行不论多少次，最终的结果都是一致相同的，就称这种行为是幂等的
+对于同一种行为，如果最终的结果与执行的次数有关，每次执行后结果都不相同，就称这种行为为非幂等
 
 
-18.MySQL���ݿ⣬Redis��MongoDB��NoSQL���ݿ�
-MySQL��
+18.MySQL数据库，Redis，MongoDB等NoSQL数据库
+MySQL：
 
-SQL�ǽṹ����ѯ���ԣ���һ����������RDBMS�����ݿ����ԣ���ǰ��ϵ�����ݿⶼ֧��ʹ��SQL���Խ��в���,Ҳ����˵����ͨ�� SQL ���� oracle,sql server,mysql,sqlite �ȵ����еĹ�ϵ�͵����ݿ�
-SQL�����Ҫ��Ϊ��
-DQL�����ݲ�ѯ���ԣ����ڶ����ݽ��в�ѯ����select
-DML�����ݲ������ԣ������ݽ������ӡ��޸ġ�ɾ������insert��udpate��delete
-TPL�����������ԣ���������д���������begin transaction��commit��rollback
-DCL�����ݿ������ԣ�������Ȩ��Ȩ�޻��գ���grant��revoke
-DDL�����ݶ������ԣ��������ݿ⡢���Ĺ����ȣ���create��drop
-CCL��ָ��������ԣ�ͨ������ָ����ɱ��Ĳ�������declare cursor
-����web����Ա�������ص������ݵ�crud����ɾ�Ĳ飩������������дDQL��DML���ܹ���дDDL������ݿ⡢���Ĳ���������������TPL��DCL��CCL�˽⼴��
-SQL ��һ�����������,ר������������ϵ���ݿ�
-�����ִ�Сд
+SQL是结构化查询语言，是一种用来操作RDBMS的数据库语言，当前关系型数据库都支持使用SQL语言进行操作,也就是说可以通过 SQL 操作 oracle,sql server,mysql,sqlite 等等所有的关系型的数据库
+SQL语句主要分为：
+DQL：数据查询语言，用于对数据进行查询，如select
+DML：数据操作语言，对数据进行增加、修改、删除，如insert、udpate、delete
+TPL：事务处理语言，对事务进行处理，包括begin transaction、commit、rollback
+DCL：数据控制语言，进行授权与权限回收，如grant、revoke
+DDL：数据定义语言，进行数据库、表的管理等，如create、drop
+CCL：指针控制语言，通过控制指针完成表的操作，如declare cursor
+对于web程序员来讲，重点是数据的crud（增删改查），必须熟练编写DQL、DML，能够编写DDL完成数据库、表的操作，其它语言如TPL、DCL、CCL了解即可
+SQL 是一门特殊的语言,专门用来操作关系数据库
+不区分大小写
 
-MySQL�ص㣺
-ʹ��C��C++��д����ʹ���˶��ֱ��������в��ԣ���֤Դ����Ŀ���ֲ��
-֧�ֶ��ֲ���ϵͳ����Linux��Windows��AIX��FreeBSD��HP-UX��MacOS��NovellNetware��OpenBSD��OS/2 Wrap��Solaris��
-Ϊ���ֱ�������ṩ��API����C��C++��Python��Java��Perl��PHP��Eiffel��Ruby��
-֧�ֶ��̣߳��������CPU��Դ
-�Ż���SQL��ѯ�㷨����Ч����߲�ѯ�ٶ�
-�ṩ������֧�֣������ı�����GB2312��BIG5��UTF8
-�ṩTCP/IP��ODBC��JDBC�ȶ������ݿ�����;��
-�ṩ���ڹ�������顢�Ż����ݿ�����Ĺ�������
-���͵����ݿ⡣���Դ���ӵ����ǧ������¼�Ĵ������ݿ�
-֧�ֶ��ִ洢����
-MySQL ����������˫��Ȩ���ߣ�����Ϊ���������ҵ�棬���������С���ٶȿ졢����ӵ�гɱ��ͣ������ǿ���Դ����һ�ص㣬һ����С����վ�Ŀ�����ѡ��MySQL��Ϊ��վ���ݿ�
-MySQLʹ�ñ�׼��SQL����������ʽ
-Mysql�ǿ��Զ��Ƶģ�������GPLЭ�飬������޸�Դ���������Լ���Mysqlϵͳ
-����DDL���Ĺ���
-����ȫ�������ʶ
-�����ޱ����ӻ�
-���ƶ��̴߳ӻ�
+MySQL特点：
+使用C和C++编写，并使用了多种编译器进行测试，保证源代码的可移植性
+支持多种操作系统，如Linux、Windows、AIX、FreeBSD、HP-UX、MacOS、NovellNetware、OpenBSD、OS/2 Wrap、Solaris等
+为多种编程语言提供了API，如C、C++、Python、Java、Perl、PHP、Eiffel、Ruby等
+支持多线程，充分利用CPU资源
+优化的SQL查询算法，有效地提高查询速度
+提供多语言支持，常见的编码如GB2312、BIG5、UTF8
+提供TCP/IP、ODBC和JDBC等多种数据库连接途径
+提供用于管理、检查、优化数据库操作的管理工具
+大型的数据库。可以处理拥有上千万条记录的大型数据库
+支持多种存储引擎
+MySQL 软件采用了双授权政策，它分为社区版和商业版，由于其体积小、速度快、总体拥有成本低，尤其是开放源码这一特点，一般中小型网站的开发都选择MySQL作为网站数据库
+MySQL使用标准的SQL数据语言形式
+Mysql是可以定制的，采用了GPL协议，你可以修改源码来开发自己的Mysql系统
+在线DDL更改功能
+复制全局事务标识
+复制无崩溃从机
+复制多线程从机
 
-��ͼ��
-ͨ�׵Ľ�����ͼ����һ��SELECT���ִ�к󷵻صĽ���������������ڴ�����ͼ��ʱ����Ҫ�Ĺ��������ڴ�������SQL��ѯ����ϡ�
-��ͼ�Ƕ������Ż����������ã�һ���������ѯ���ִ�еĽ�������洢��������ݣ����������ݷ����˸ı䣬��ͼҲ����Ÿı䣩��
-����������ر��ǲ�ѯ���������ٸ��ӵ�SQL��䣬��ǿ�ɶ��ԣ�
+视图；
+通俗的讲，视图就是一条SELECT语句执行后返回的结果集。所以我们在创建视图的时候，主要的工作就落在创建这条SQL查询语句上。
+视图是对若干张基本表的引用，一张虚表，查询语句执行的结果，不存储具体的数据（基本表数据发生了改变，视图也会跟着改变）；
+方便操作，特别是查询操作，减少复杂的SQL语句，增强可读性；
 
-��ͼ�����ã�
-����������ԣ�����һ������
-�����ݿ��ع���ȴ��Ӱ����������
-����˰�ȫ���ܣ����ԶԲ�ͬ���û�
-�����ݸ�������
+视图的作用：
+提高了重用性，就像一个函数
+对数据库重构，却不影响程序的运行
+提高了安全性能，可以对不同的用户
+让数据更加清晰
 
-����
-��ν����,����һ���������У���Щ����Ҫô��ִ�У�Ҫô����ִ�У�����һ�����ɷָ�Ĺ�����λ��
-�����Ĵ�����(���ACID)
-ԭ����(Atomicity)
-һ����(Consistency)
-������(Isolation)
-�־���(Durability)
-ע�⣺
-�޸����ݵ�������Զ��Ĵ������񣬰���insert��update��delete
-����SQL��������ֶ����������ԭ���ǣ����Խ��ж�����ݵ��޸ģ�����ɹ�һ��ɹ�������һ������֮ǰ������
+事务：
+所谓事务,它是一个操作序列，这些操作要么都执行，要么都不执行，它是一个不可分割的工作单位。
+事务四大特性(简称ACID)
+原子性(Atomicity)
+一致性(Consistency)
+隔离性(Isolation)
+持久性(Durability)
+注意：
+修改数据的命令会自动的触发事务，包括insert、update、delete
+而在SQL语句中有手动开启事务的原因是：可以进行多次数据的修改，如果成功一起成功，否则一起会滚到之前的数据
 
-������
-������һ��������ļ�(InnoDB���ݱ��ϵ������Ǳ��ռ��һ����ɲ���)�����ǰ����Ŷ����ݱ������м�¼������ָ�롣
-��ͨ�׵�˵�����ݿ������ñ���һ����ǰ���Ŀ¼���ܼӿ����ݿ�Ĳ�ѯ�ٶ�
+索引：
+索引是一种特殊的文件(InnoDB数据表上的索引是表空间的一个组成部分)，它们包含着对数据表里所有记录的引用指针。
+更通俗的说，数据库索引好比是一本书前面的目录，能加快数据库的查询速度
 
 19.redis
-	Redis��һ����Դ��ʹ��ANSI C���Ա�д��֧�����硢�ɻ����ڴ���ɳ־û�����־�͡�Key-Value���ݿ⣬���ṩ�������Ե�API��
-Redis��һ����Դ��BSD���ɣ��ġ��ڴ��е����ݽṹ�洢ϵͳ���������������ݿ⡢�������Ϣ�м��
-redis��һ�������ܵ�key-value�洢ϵͳ��Redis֧������ͬ����
-redis��key-value�����ݽṹ��ÿ�����ݶ���һ����ֵ��
-�����������ַ���
-ע�⣺�������ظ�
-ֵ�����ͷ�Ϊ���֣�
-�ַ���string
-��ϣhash
-�б�list
-����set
-���򼯺�zset
-1��string
-string��redis�����������
-����ܴ洢512MB����
-string�����Ƕ����ư�ȫ�ģ����Դ洢�κ����ݣ��������֡�ͼƬ��
-2��hash
-hash���ڴ洢���󣬶���ĽṹΪ���ԡ�ֵ
-ֵ������Ϊstring
-3��list
-�б���Ԫ������Ϊstring
-���ղ���˳������
-4��set
-���򼯺�
-Ԫ��Ϊstring����
-Ԫ�ؾ���Ψһ�ԣ����ظ�
-˵�������ڼ���û���޸Ĳ���
-5��zset
-sorted set�����򼯺�
-Ԫ��Ϊstring����
-Ԫ�ؾ���Ψһ�ԣ����ظ�
-ÿ��Ԫ�ض������һ��double���͵�score����ʾȨ�أ�ͨ��Ȩ�ؽ�Ԫ�ش�С��������
-˵����û���޸Ĳ���
-6����������
-һ��master����ӵ�ж��slave��һ��slave�ֿ���ӵ�ж��slave�������ȥ���γ���ǿ��Ķ༶��������Ⱥ�ܹ�
-���磬��ipΪ192.168.1.10�Ļ�����Ϊ������������ipΪ192.168.1.11�Ļ�����Ϊ�ӷ�����
-˵����ip���Ի�Ϊ�Լ�������ͬ�������ĵ�ַ
-������������������
+	Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。
+Redis是一个开源（BSD许可）的、内存中的数据结构存储系统，它可以用作数据库、缓存和消息中间件
+redis是一个高性能的key-value存储系统。Redis支持主从同步。
+redis是key-value的数据结构，每条数据都是一个键值对
+键的类型是字符串
+注意：键不能重复
+值的类型分为五种：
+字符串string
+哈希hash
+列表list
+集合set
+有序集合zset
+1）string
+string是redis最基本的类型
+最大能存储512MB数据
+string类型是二进制安全的，可以存储任何数据，比如数字、图片等
+2）hash
+hash用于存储对象，对象的结构为属性、值
+值的类型为string
+3）list
+列表的元素类型为string
+按照插入顺序排序
+4）set
+无序集合
+元素为string类型
+元素具有唯一性，不重复
+说明：对于集合没有修改操作
+5）zset
+sorted set，有序集合
+元素为string类型
+元素具有唯一性，不重复
+每个元素都会关联一个double类型的score，表示权重，通过权重将元素从小到大排序
+说明：没有修改操作
+6）主从配置
+一个master可以拥有多个slave，一个slave又可以拥有多个slave，如此下去，形成了强大的多级服务器集群架构
+比如，将ip为192.168.1.10的机器作为主服务器，将ip为192.168.1.11的机器作为从服务器
+说明：ip可以换为自己机器与同桌机器的地址
+设置主服务器的配置
 bind 192.168.1.10
-���ôӷ�����������
-ע�⣺��slaveof����д����ip����д�˿ڣ����Ҷ˿ڱ���д
+设置从服务器的配置
+注意：在slaveof后面写主机ip，再写端口，而且端口必须写
 bind 192.168.1.11
 slaveof 192.168.1.10 6379
 
 
 20.MongoDB
-1��MongoDB (�������ԡ�humongous (�޴��ޱȵ�)��)�� ��һ������չ�ĸ����ܣ���Դ��ģʽ���ɣ������ĵ���NoSQL������ �ֲ�ʽ �ļ��洢���� C++ ���Ա�д�����֮��ּ��Ϊ WEB Ӧ���ṩ����չ�ĸ��������ݴ洢���������
-MongoDBʹ�õ����ڴ�ӳ��洢���棬����Ѵ���IO����ת�����ڴ����������Ƕ��������ڴ��е������𵽻�������ã������д�������ڴ滹���԰������д����ת����˳���д������������������ܡ�
-MongoDB ��ӵ��Key-Value�洢��ʽ�ĸ����ܺ͸߶������ԣ�Ҳӵ�д�ͳ��RDBMSϵͳ�ķḻ�Ĺ��ܣ������ߵ�������һ���� ���ڹ�ϵ���ݿ��NoSQL֮�䣬Ҳ�ǹ�����ḻ�������ϵ���ݿ�ĵ�NoSQL��
-2��MongoDB�ص�
-ģʽ���� :���԰Ѳ�ͬ�ṹ���ĵ��洢��ͬһ�����ݿ���
-���򼯺ϵĴ洢���ʺϴ洢 JSON����ļ�����ʽ��
-����������֧�֣����κ����Կ�������
-���ƺ͸߿����ԣ�֧�ַ�����֮������ݸ��ƣ�֧����-��ģʽ��������֮����໥���ơ����Ƶ���ҪĿ�����ṩ���༰�Զ�����ת�ơ�
-�Զ���Ƭ��֧��ˮƽ�����ݿ⼯Ⱥ���ɶ�̬���Ӷ���Ļ�����
-�ḻ�Ĳ�ѯ��֧�ַḻ�Ĳ�ѯ���﷽ʽ����ѯָ��ʹ��JSON��ʽ�ı�ǣ������ײ�ѯ�ĵ��е���Ƕ�Ķ������顣
-���پ͵ظ��£���ѯ�Ż����������ѯ����ʽ��������һ����Ч�Ĳ�ѯ�ƻ���
-��Ч�Ĵ�ͳ�洢��ʽ��֧�ֶ��������ݼ����Ͷ�����ͼƬ��...����
+1）MongoDB (名称来自「humongous (巨大无比的)」)， 是一个可扩展的高性能，开源，模式自由，面向文档的NoSQL，基于 分布式 文件存储，由 C++ 语言编写，设计之初旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。
+MongoDB使用的是内存映射存储引擎，它会把磁盘IO操作转换成内存操作，如果是读操作，内存中的数据起到缓存的作用，如果是写操作，内存还可以把随机的写操作转换成顺序的写操作，大幅度提升性能。
+MongoDB 既拥有Key-Value存储方式的高性能和高度伸缩性，也拥有传统的RDBMS系统的丰富的功能，集两者的优势于一身。 介于关系数据库和NoSQL之间，也是功能最丰富、最像关系数据库的的NoSQL。
+2）MongoDB特点
+模式自由 :可以把不同结构的文档存储在同一个数据库里
+面向集合的存储：适合存储 JSON风格文件的形式，
+完整的索引支持：对任何属性可索引，
+复制和高可用性：支持服务器之间的数据复制，支持主-从模式及服务器之间的相互复制。复制的主要目的是提供冗余及自动故障转移。
+自动分片：支持水平的数据库集群，可动态添加额外的机器。
+丰富的查询：支持丰富的查询表达方式，查询指令使用JSON形式的标记，可轻易查询文档中的内嵌的对象及数组。
+快速就地更新：查询优化器会分析查询表达式，并生成一个高效的查询计划。
+高效的传统存储方式：支持二进制数据及大型对象（如图片等...）。
 
-3��RDBMS VS MongoDB
-��������ı���ʾRDBMS(��ϵ�����ݿ����ϵͳ)���� �� MongoDB �Ĺ�ϵ
-SQL����/����	MongoDB����/����	����/˵��
-database		database			���ݿ�
-table			collection			���ݿ��/����
-row				document			���ݼ�¼��/�ĵ�
-column			field				��������/�ֶ�(��)
-index			index				����
-primary key		primary key			����,MongoDBĬ���Զ���_id�ֶ�����Ϊ����,�����ֶ�����
+3）RDBMS VS MongoDB
+下面给出的表显示RDBMS(关系型数据库管理系统)术语 与 MongoDB 的关系
+SQL术语/概念	MongoDB术语/概念	解释/说明
+database		database			数据库
+table			collection			数据库表/集合
+row				document			数据记录行/文档
+column			field				数据属性/字段(域)
+index			index				索引
+primary key		primary key			主键,MongoDB默认自动将_id字段设置为主键,可以手动设置
 
-4���±�ΪMongoDB�г��õļ����������ͣ�
-ObjectID���ĵ�ID
-String���ַ�������ã���������Ч��UTF-8
-Boolean���洢һ������ֵ��true��false
-Integer������������32λ��64λ����ȡ���ڷ�����
-Double���洢����ֵ
-Arrays��������б������ֵ�洢��һ����
-Object������Ƕ��ʽ���ĵ�����һ��ֵΪһ���ĵ�
-Null���洢Nullֵ
-Timestamp��ʱ�������ʾ��1970-1-1�����ڵ�������
-Date���洢��ǰ���ڻ�ʱ���UNIXʱ���ʽ
-5���ۺ� aggregate
-db.��������.aggregate([ {�ܵ� : {����ʽ}} ])
-���ùܵ�
-$group���������е��ĵ����飬������ͳ�ƽ��
-$match���������ݣ�ֻ��������������ĵ�
-$project���޸������ĵ��Ľṹ���������������ӡ�ɾ���ֶΡ�����������
-$sort���������ĵ���������
-$limit�����ƾۺϹܵ����ص��ĵ���
-$skip������ָ���������ĵ������������µ��ĵ�
-$unwind�����������͵��ֶν��в��
+4）下表为MongoDB中常用的几种数据类型：
+ObjectID：文档ID
+String：字符串，最常用，必须是有效的UTF-8
+Boolean：存储一个布尔值，true或false
+Integer：整数可以是32位或64位，这取决于服务器
+Double：存储浮点值
+Arrays：数组或列表，多个值存储到一个键
+Object：用于嵌入式的文档，即一个值为一个文档
+Null：存储Null值
+Timestamp：时间戳，表示从1970-1-1到现在的总秒数
+Date：存储当前日期或时间的UNIX时间格式
+5）聚合 aggregate
+db.集合名称.aggregate([ {管道 : {表达式}} ])
+常用管道
+$group：将集合中的文档分组，可用于统计结果
+$match：过滤数据，只输出符合条件的文档
+$project：修改输入文档的结构，如重命名、增加、删除字段、创建计算结果
+$sort：将输入文档排序后输出
+$limit：限制聚合管道返回的文档数
+$skip：跳过指定数量的文档，并返回余下的文档
+$unwind：将数组类型的字段进行拆分
 
 
-21.urllib2��Ļ���ʹ��
-	��ν��ҳץȡ�����ǰ�URL��ַ��ָ����������Դ����������ץȡ������
-��Python���кܶ���������ץȡ��ҳ��������ѧϰurllib2��
+21.urllib2库的基本使用
+	所谓网页抓取，就是把URL地址中指定的网络资源从网络流中抓取出来。
+在Python中有很多库可以用来抓取网页，我们先学习urllib2。
 
 22.Request
-	urlopen()�Ĳ�������һ��url��ַ�����������Ҫִ�и����ӵĲ�������������HTTP��ͷ��
-���봴��һ�� Request ʵ������Ϊurlopen()�Ĳ���������Ҫ���ʵ�url��ַ����Ϊ Request ʵ���Ĳ�����
-�½�Requestʵ�������˱���Ҫ�� url ����֮�⣬������������������������
-data��Ĭ�Ͽգ����ύ��Form�������ݣ�ͬʱ HTTP ���󷽷�����Ĭ�ϵ� "GET"��ʽ ��Ϊ "POST"��ʽ��
-headers��Ĭ�Ͽգ�������Ϊ�ֵ����ͣ���������Ҫ���͵�HTTP��ͷ�ļ�ֵ�ԡ�
-Request������������data����������������POST��ģ�����Ҫ���͵����ݾ����������data��data��һ���ֵ䣬����Ҫƥ���ֵ�ԡ�
+	urlopen()的参数就是一个url地址；但是如果需要执行更复杂的操作，比如增加HTTP报头，
+必须创建一个 Request 实例来作为urlopen()的参数；而需要访问的url地址则作为 Request 实例的参数。
+新建Request实例，除了必须要有 url 参数之外，还可以设置另外两个参数：
+data（默认空）：提交的Form表单数据，同时 HTTP 请求方法将从默认的 "GET"方式 改为 "POST"方式。
+headers（默认空）：参数为字典类型，包含了需要发送的HTTP报头的键值对。
+Request请求对象的里有data参数，它就是用在POST里的，我们要传送的数据就是这个参数data，data是一个字典，里面要匹配键值对。
 
 
 23.Requests
-Requests �̳���urllib2���������ԡ�Requests֧��HTTP���ӱ��ֺ����ӳأ�֧��ʹ��cookie���ֻỰ��֧���ļ��ϴ���֧���Զ�ȷ����Ӧ���ݵı��룬֧�ֹ��ʻ��� URL �� POST �����Զ����롣
-requests �ĵײ�ʵ����ʵ���� urllib3��
-1. �������GET�������ֱ����get����
+Requests 继承了urllib2的所有特性。Requests支持HTTP连接保持和连接池，支持使用cookie保持会话，支持文件上传，支持自动确定响应内容的编码，支持国际化的 URL 和 POST 数据自动编码。
+requests 的底层实现其实就是 urllib3。
+1. 最基本的GET请求可以直接用get方法
 response = requests.get("http://www.baidu.com/")
-2. ���� headers �� ��ѯ����
-��������� headers�����Դ���headers��������������ͷ�е�headers��Ϣ�����Ҫ����������url�д��ݣ��������� params ������
-# params ����һ���ֵ�����ַ����Ĳ�ѯ�������ֵ������Զ�ת��Ϊurl���룬����Ҫurlencode()
+2. 添加 headers 和 查询参数
+如果想添加 headers，可以传入headers参数来增加请求头中的headers信息。如果要将参数放在url中传递，可以利用 params 参数。
+# params 接收一个字典或者字符串的查询参数，字典类型自动转换为url编码，不需要urlencode()
 response = requests.get("http://www.baidu.com/s?", params = kw, headers = headers)
 
-1. �������GET�������ֱ����post����
+1. 最基本的GET请求可以直接用post方法
 response = requests.post("http://www.baidu.com/", data = data)
-2. ����data����
-���� POST ������˵������һ����ҪΪ������һЩ��������ô������Ĵ��η����������� data ���������
+2. 传入data数据
+对于 POST 请求来说，我们一般需要为它增加一些参数。那么最基本的传参方法可以利用 data 这个参数。
 response = requests.post(url, data = formdata, headers = headers)
-������proxies������
-�����Ҫʹ�ô����������ͨ��Ϊ�������󷽷��ṩ proxies ���������õ�������
+代理（proxies参数）
+如果需要使用代理，你可以通过为任意请求方法提供 proxies 参数来配置单个请求：
 response = requests.get("http://www.baidu.com", proxies = proxies)
-3.˽�ܴ���
-# ���������Ҫʹ��HTTP Basic Auth������ʹ���������ָ�ʽ��
+3.私密代理
+# 如果代理需要使用HTTP Basic Auth，可以使用下面这种格式：
 proxy = { "http": "mr_mao_hacker:sffqry9r@61.158.163.130:16816" }
 response = requests.get("http://www.baidu.com", proxies = proxy)
-4.web�ͻ�����֤
-�����Web�ͻ�����֤����Ҫ���� auth = (�˻���, ����)
+4.web客户端验证
+如果是Web客户端验证，需要添加 auth = (账户名, 密码)
 response = requests.get('http://192.168.199.107', auth = auth)
 5.Session
-�� requests �session������һ���ǳ����õĶ�������������һ���û��Ự���ӿͻ�����������ӷ�������ʼ�����ͻ����������������Ͽ���
-�Ự���������ڿ�����ʱ�򱣳�ĳЩ������������ͬһ�� Session ʵ����������������֮�䱣�� cookie ��
-# 1. ����session���󣬿��Ա���Cookieֵ
+在 requests 里，session对象是一个非常常用的对象，这个对象代表一次用户会话：从客户端浏览器连接服务器开始，到客户端浏览器与服务器断开。
+会话能让我们在跨请求时候保持某些参数，比如在同一个 Session 实例发出的所有请求之间保持 cookie 。
+# 1. 创建session对象，可以保存Cookie值
 ssion = requests.session()
-# 5. ssion�����û���¼���Cookieֵ������ֱ�ӷ�����Щ��¼��ſ��Է��ʵ�ҳ��
+# 5. ssion包含用户登录后的Cookie值，可以直接访问那些登录后才可以访问的页面
 response = ssion.get("http://www.renren.com/410043129/profile")
-6.����HTTPS���� SSL֤����֤
-RequestsҲ����ΪHTTPS������֤SSL֤�飺
-Ҫ����ĳ��������SSL֤�飬�����ʹ�� verify ������Ҳ���Բ�д��
+6.处理HTTPS请求 SSL证书验证
+Requests也可以为HTTPS请求验证SSL证书：
+要想检查某个主机的SSL证书，你可以使用 verify 参数（也可以不写）
 response = requests.get("https://www.baidu.com/", verify=True)
 
 
-24.Scrapy ���
-Scrapy���ô�Pythonʵ��һ��Ϊ����ȡ��վ���ݡ���ȡ�ṹ�����ݶ���д��Ӧ�ÿ�ܣ���;�ǳ��㷺��
-��ܵ��������û�ֻ��Ҫ���ƿ�������ģ��Ϳ������ɵ�ʵ��һ�����棬����ץȡ��ҳ�����Լ�����ͼƬ���ǳ�֮���㡣
-Scrapy ʹ���� Twisted['tw?st?d](����Ҫ������Tornado)�첽����������������ͨѶ�����Լӿ����ǵ������ٶȣ������Լ�ȥʵ���첽��ܣ����Ұ����˸����м���ӿڣ�����������ɸ�������
-1��Scrapy �� scrapy-redis������
-Scrapy ��һ��ͨ�õ������ܣ����ǲ�֧�ֲַ�ʽ��Scrapy-redis��Ϊ�˸������ʵ��Scrapy�ֲ�ʽ��ȡ�����ṩ��һЩ��redisΪ���������(�������)��
+24.Scrapy 框架
+Scrapy是用纯Python实现一个为了爬取网站数据、提取结构性数据而编写的应用框架，用途非常广泛。
+框架的力量，用户只需要定制开发几个模块就可以轻松的实现一个爬虫，用来抓取网页内容以及各种图片，非常之方便。
+Scrapy 使用了 Twisted['tw?st?d](其主要对手是Tornado)异步网络框架来处理网络通讯，可以加快我们的下载速度，不用自己去实现异步框架，并且包含了各种中间件接口，可以灵活的完成各种需求。
+1）Scrapy 和 scrapy-redis的区别
+Scrapy 是一个通用的爬虫框架，但是不支持分布式，Scrapy-redis是为了更方便地实现Scrapy分布式爬取，而提供了一些以redis为基础的组件(仅有组件)。
 pip install scrapy-redis
-Scrapy-redis�ṩ���������������components����(���������ζ�����ĸ�ģ�鶼Ҫ����Ӧ���޸�)
+Scrapy-redis提供了下面四种组件（components）：(四种组件意味着这四个模块都要做相应的修改)
 Scheduler
 Duplication Filter
 Item Pipeline
 Base Spider
-�ܽ�
-����ܽ�һ��scrapy-redis������˼·���������ͨ����дscheduler��spider�࣬ʵ���˵��ȡ�spider������redis�Ľ�����
-ʵ���µ�dupefilter��queue�࣬�ﵽ�����غ͵���������redis�Ľ�������Ϊÿ�������ϵ�������̶�����ͬһ��redis���ݿ⣬���Ե��Ⱥ����ض�ͳһ����ͳһ�������ﵽ�˷ֲ�ʽ�����Ŀ�ġ�
-��spider����ʼ��ʱ��ͬʱ���ʼ��һ����Ӧ��scheduler�����������������ͨ����ȡsettings�����ú��Լ��ĵ�������queue�����ع���dupefilter��
-ÿ��һ��spider����һ��request��ʱ��scrapy���������reuqest�ݽ������spider��Ӧ��scheduler������е��ȣ�
-scheduler����ͨ������redis��request�������أ�������ظ��Ͱ������ӽ�redis�еĵ����������
-��������������ʱ��scheduler����ʹ�redis�ĵ�����������ȡ��һ��request���͸�spider��������ȡ��
-��spider��ȡ��������ʱ����url֮��scheduler�������spider��Ӧ��redis�ĵ��������п��ˣ�
-���Ǵ����ź�spider_idle��spider�յ�����ź�֮��ֱ������redis��ȡstrart_url�أ���ȥ�µ�һ��url��ڣ�Ȼ���ٴ��ظ��ϱߵĹ�����
+总结
+最后总结一下scrapy-redis的总体思路：这套组件通过重写scheduler和spider类，实现了调度、spider启动和redis的交互。
+实现新的dupefilter和queue类，达到了判重和调度容器和redis的交互，因为每个主机上的爬虫进程都访问同一个redis数据库，所以调度和判重都统一进行统一管理，达到了分布式爬虫的目的。
+当spider被初始化时，同时会初始化一个对应的scheduler对象，这个调度器对象通过读取settings，配置好自己的调度容器queue和判重工具dupefilter。
+每当一个spider产出一个request的时候，scrapy引擎会把这个reuqest递交给这个spider对应的scheduler对象进行调度，
+scheduler对象通过访问redis对request进行判重，如果不重复就把他添加进redis中的调度器队列里。
+当调度条件满足时，scheduler对象就从redis的调度器队列中取出一个request发送给spider，让他爬取。
+当spider爬取的所有暂时可用url之后，scheduler发现这个spider对应的redis的调度器队列空了，
+于是触发信号spider_idle，spider收到这个信号之后，直接连接redis读取strart_url池，拿去新的一批url入口，然后再次重复上边的工作。
 
 
 
 25.Selenium
-Selenium��һ��Web���Զ������Թ��ߣ������Ϊ��վ�Զ������Զ������ģ���������������Ϸ�õİ������飬���԰�ָ���������Զ���������ͬ��Selenium ����ֱ��������������ϣ���֧�����������������������PhantomJS��Щ�޽�������������
-Selenium ���Ը������ǵ�ָ���������Զ�����ҳ�棬��ȡ��Ҫ�����ݣ�����ҳ������������ж���վ��ĳЩ�����Ƿ�����
-Selenium �Լ��������������֧��������Ĺ��ܣ�����Ҫ�����������������һ�����ʹ�á�����������ʱ����Ҫ������Ƕ�ڴ��������У��������ǿ�����һ���� PhantomJS �Ĺ��ߴ�����ʵ�������
+Selenium是一个Web的自动化测试工具，最初是为网站自动化测试而开发的，类型像我们玩游戏用的按键精灵，可以按指定的命令自动操作，不同是Selenium 可以直接运行在浏览器上，它支持所有主流的浏览器（包括PhantomJS这些无界面的浏览器）。
+Selenium 可以根据我们的指令，让浏览器自动加载页面，获取需要的数据，甚至页面截屏，或者判断网站上某些动作是否发生。
+Selenium 自己不带浏览器，不支持浏览器的功能，它需要与第三方浏览器结合在一起才能使用。但是我们有时候需要让它内嵌在代码中运行，所以我们可以用一个叫 PhantomJS 的工具代替真实的浏览器
 PhantomJS
-PhantomJS ��һ������Webkit�ġ��޽��桱(headless)��������������վ���ص��ڴ沢ִ��ҳ���ϵ� JavaScript����Ϊ����չʾͼ�ν��棬�������������������������Ҫ��Ч��
-������ǰ� Selenium �� PhantomJS �����һ�𣬾Ϳ�������һ���ǳ�ǿ������������ˣ����������Դ��� JavaScrip��Cookie��headers���Լ��κ�������ʵ�û���Ҫ��������
-1��Selenium �����и��� WebDriver �� API��WebDriver �е������Լ�����վ���������������Ҳ������ BeautifulSoup �������� Selector ����һ����������ҳ��Ԫ�أ���ҳ���ϵ�Ԫ�ؽ��н��� (�����ı��������)���Լ�ִ�����������������������档
+PhantomJS 是一个基于Webkit的“无界面”(headless)浏览器，它会把网站加载到内存并执行页面上的 JavaScript，因为不会展示图形界面，所以运行起来比完整的浏览器要高效。
+如果我们把 Selenium 和 PhantomJS 结合在一起，就可以运行一个非常强大的网络爬虫了，这个爬虫可以处理 JavaScrip、Cookie、headers，以及任何我们真实用户需要做的事情
+1）Selenium 库里有个叫 WebDriver 的 API。WebDriver 有点儿像可以加载网站的浏览器，但是它也可以像 BeautifulSoup 或者其他 Selector 对象一样用来查找页面元素，与页面上的元素进行交互 (发送文本、点击等)，以及执行其他动作来运行网络爬虫。
 
-2����λUIԪ�� (WebElements)
-����Ԫ�ص�ѡȡ�������µ�API ����Ԫ��ѡȡ
+2）定位UI元素 (WebElements)
+关于元素的选取，有如下的API 单个元素选取
 find_element_by_id
 find_elements_by_name
 find_elements_by_xpath
@@ -396,35 +396,35 @@ find_elements_by_tag_name
 find_elements_by_class_name
 find_elements_by_css_selector
 
-3����궯����
-��Щʱ��������Ҫ��ҳ����ģ��һЩ������������˫�����һ�����ק������ס�����ȣ����ǿ���ͨ������ ActionChains ����������
+3）鼠标动作链
+有些时候，我们需要再页面上模拟一些鼠标操作，比如双击、右击、拖拽甚至按住不动等，我们可以通过导入 ActionChains 类来做到。
 
-4��������
-�����Ѿ�֪�����������ı������������֣�������ʱ�����ǻ�����<select> </select>��ǩ��������ֱ�ӵ���������е�ѡ�һ�����С�
-Seleniumר���ṩ��Select�������������� ��ʵ WebDriver ���ṩ��һ���� Select �ķ��������԰������������Щ���顣
+4）填充表单
+我们已经知道了怎样向文本框中输入文字，但是有时候我们会碰到<select> </select>标签的下拉框。直接点击下拉框中的选项不一定可行。
+Selenium专门提供了Select类来处理下拉框。 其实 WebDriver 中提供了一个叫 Select 的方法，可以帮助我们完成这些事情。
 
-5����������
-���㴥����ĳ���¼�֮��ҳ������˵�����ʾ�����������ʾ���߻�ȡ��ʾ��Ϣ�������£�
+5）弹窗处理
+当你触发了某个事件之后，页面出现了弹窗提示，处理这个提示或者获取提示信息方法如下：
 alert = driver.switch_to_alert()
 
-6��ҳ���л�
-һ��������϶����кܶര�ڣ��������ǿ϶�Ҫ�з�����ʵ�ִ��ڵ��л����л����ڵķ������£�
+6）页面切换
+一个浏览器肯定会有很多窗口，所以我们肯定要有方法来实现窗口的切换。切换窗口的方法如下：
 driver.switch_to.window("this is window name")
-Ҳ����ʹ�� window_handles ��������ȡÿ�����ڵĲ����������磺
+也可以使用 window_handles 方法来获取每个窗口的操作对象。例如：
 for handle in driver.window_handles:
     driver.switch_to_window(handle)
 
-7��ҳ��ǰ���ͺ���
-����ҳ���ǰ���ͺ��˹��ܣ�
-driver.forward()     #ǰ��
-driver.back()        # ����
+7）页面前进和后退
+操作页面的前进和后退功能：
+driver.forward()     #前进
+driver.back()        # 后退
 
-8��Cookies
-��ȡҳ��ÿ��Cookiesֵ���÷�����
+8）Cookies
+获取页面每个Cookies值，用法如下
 for cookie in driver.get_cookies():
     print "%s=%s;" % (cookie['name'], cookie['value'])
 	
-9��ҳ��ȴ�
-��ʽ�ȴ��ǵȴ��ض���ʱ�䣬��ʽ�ȴ���ָ��ĳһ����ֱ�������������ʱ����ִ�С�
+9）页面等待
+隐式等待是等待特定的时间，显式等待是指定某一条件直到这个条件成立时继续执行。
 
 26.
