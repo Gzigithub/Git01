@@ -29,7 +29,9 @@ def password(self, password):函数，对self.password_hash赋值。
 
 技术描述：Flask+MySQL+Redis+Gunicorn+Nginx  
 项目描述及模块：
-***是一个关于短期出租、寻租房屋平台的项目。主要目标是为用户提供租房、寻租的一个平台,项目基于Flask框架，项目以前后端分离的形式实现具体功能业务，前后端交互数据形式主要使用json。后台接口负责处理业务逻辑，并提供响应数据，前端页面负责展示数据和效果。项目接口设计符合RestfulAPI风格。
+***是一个关于短期出租、寻租房屋平台的项目。主要目标是为用户提供租房、寻租的一个平台,项目基于Flask框架，
+项目以前后端分离的形式实现具体功能业务，前后端交互数据形式主要使用json。后台接口负责处理业务逻辑，并提供响应数据，前端页面负责展示数据和效果。
+项目接口设计符合RestfulAPI风格。
 Flask扩展：
 flask-SQLAlchemy
 flask_script
